@@ -1,0 +1,27 @@
+# 编译后的二进制文件
+/pdfmerger
+/pdf-merger
+
+# Go相关
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.sum
+
+# IDE相关
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 临时文件
+/tmp/
+*.tmp
+
+# 操作系统相关
+.DS_Store
+Thumbs.db
