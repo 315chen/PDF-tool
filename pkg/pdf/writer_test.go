@@ -27,15 +27,15 @@ func TestPDFWriterBasic(t *testing.T) {
 
 	// 创建写入器选项
 	options := &WriterOptions{
-		MaxRetries:       3,
-		RetryDelay:       time.Second * 1,
-		BackupEnabled:    true,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        3,
+		RetryDelay:        time.Second * 1,
+		BackupEnabled:     true,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
-		EncryptUsingAES:  true,
-		EncryptKeyLength: 256,
+		WriteXRefStream:   true,
+		EncryptUsingAES:   true,
+		EncryptKeyLength:  256,
 	}
 
 	// 创建PDF写入器
@@ -152,15 +152,15 @@ func TestPDFWriterOptions(t *testing.T) {
 	t.Run("TestCustomOptions", func(t *testing.T) {
 		outputPath := filepath.Join(testDir, "custom_options.pdf")
 		options := &WriterOptions{
-			MaxRetries:       5,
-			RetryDelay:       time.Second * 3,
-			BackupEnabled:    false,
-			TempDirectory:    testDir,
-			ValidationMode:   "strict",
+			MaxRetries:        5,
+			RetryDelay:        time.Second * 3,
+			BackupEnabled:     false,
+			TempDirectory:     testDir,
+			ValidationMode:    "strict",
 			WriteObjectStream: false,
-			WriteXRefStream:  false,
-			EncryptUsingAES:  false,
-			EncryptKeyLength: 128,
+			WriteXRefStream:   false,
+			EncryptUsingAES:   false,
+			EncryptKeyLength:  128,
 		}
 
 		writer, err := NewPDFWriter(outputPath, options)
@@ -372,10 +372,10 @@ func TestPDFWriterValidation(t *testing.T) {
 	outputPath := filepath.Join(testDir, "validation_test.pdf")
 
 	options := &WriterOptions{
-		ValidationMode:   "relaxed",
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
-		TempDirectory:    testDir,
+		WriteXRefStream:   true,
+		TempDirectory:     testDir,
 	}
 
 	writer, err := NewPDFWriter(outputPath, options)
@@ -494,13 +494,13 @@ func testPerformanceWithSize(t *testing.T, testDir string, pageCount int, testNa
 	outputPath := filepath.Join(testDir, fmt.Sprintf("perf_%s.pdf", testName))
 
 	options := &WriterOptions{
-		MaxRetries:       1,
-		RetryDelay:       time.Millisecond * 50,
-		BackupEnabled:    false,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        1,
+		RetryDelay:        time.Millisecond * 50,
+		BackupEnabled:     false,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
+		WriteXRefStream:   true,
 	}
 
 	writer, err := NewPDFWriter(outputPath, options)
@@ -512,7 +512,7 @@ func testPerformanceWithSize(t *testing.T, testDir string, pageCount int, testNa
 
 	// 创建指定页数的PDF内容
 	content := createMultiPagePDFContent(pageCount, fmt.Sprintf("%s content", testName))
-	
+
 	// 记录内存使用情况
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
@@ -533,7 +533,7 @@ func testPerformanceWithSize(t *testing.T, testDir string, pageCount int, testNa
 	assert.True(t, result.Success)
 	assert.Greater(t, result.FileSize, int64(0))
 
-	t.Logf("%s: 页数=%d, 文件大小=%d bytes, 写入时间=%v, 验证时间=%v", 
+	t.Logf("%s: 页数=%d, 文件大小=%d bytes, 写入时间=%v, 验证时间=%v",
 		testName, pageCount, result.FileSize, result.WriteTime, result.ValidationTime)
 	t.Logf("总耗时: %v, 内存使用: %d bytes", duration, finalAlloc-initialAlloc)
 }
@@ -553,13 +553,13 @@ func testConcurrentPerformance(t *testing.T, testDir string, numWriters int, tes
 
 			outputPath := filepath.Join(testDir, fmt.Sprintf("concurrent_perf_%d.pdf", index))
 			options := &WriterOptions{
-				MaxRetries:       1,
-				RetryDelay:       time.Millisecond * 10,
-				BackupEnabled:    false,
-				TempDirectory:    testDir,
-				ValidationMode:   "relaxed",
+				MaxRetries:        1,
+				RetryDelay:        time.Millisecond * 10,
+				BackupEnabled:     false,
+				TempDirectory:     testDir,
+				ValidationMode:    "relaxed",
 				WriteObjectStream: true,
-				WriteXRefStream:  true,
+				WriteXRefStream:   true,
 			}
 
 			writer, err := NewPDFWriter(outputPath, options)
@@ -615,7 +615,7 @@ func testConcurrentPerformance(t *testing.T, testDir string, numWriters int, tes
 		totalSize += result.FileSize
 	}
 
-	t.Logf("%s: 并发数=%d, 成功数=%d, 总文件大小=%d bytes, 总耗时=%v", 
+	t.Logf("%s: 并发数=%d, 成功数=%d, 总文件大小=%d bytes, 总耗时=%v",
 		testName, numWriters, successCount, totalSize, duration)
 	assert.Equal(t, numWriters, successCount)
 }
@@ -625,15 +625,15 @@ func createMultiPagePDFContent(pageCount int, text string) []byte {
 	if pageCount <= 0 {
 		pageCount = 1
 	}
-	
+
 	// 创建基本的单页PDF内容
 	baseContent := createWriterTestPDFContent(text)
-	
+
 	// 对于多页，我们创建包含多个页面对象的PDF
 	if pageCount == 1 {
 		return baseContent
 	}
-	
+
 	// 创建多页PDF内容（简化版本）
 	multiPageContent := fmt.Sprintf(`%%PDF-1.4
 1 0 obj
@@ -649,7 +649,7 @@ endobj
 /Count %d
 >>
 endobj`, generatePageRefs(pageCount), pageCount)
-	
+
 	// 添加页面对象
 	for i := 1; i <= pageCount; i++ {
 		multiPageContent += fmt.Sprintf(`
@@ -662,7 +662,7 @@ endobj`, generatePageRefs(pageCount), pageCount)
 >>
 endobj`, i+2, i+pageCount+2)
 	}
-	
+
 	// 添加内容流
 	for i := 1; i <= pageCount; i++ {
 		content := fmt.Sprintf("BT\n/F1 12 Tf\n72 %d Td\n(Page %d: %s) Tj\nET", 720-i*50, i, text)
@@ -676,7 +676,7 @@ stream
 endstream
 endobj`, i+pageCount+2, len(content), content)
 	}
-	
+
 	// 添加交叉引用表和尾部
 	multiPageContent += fmt.Sprintf(`
 xref
@@ -693,7 +693,7 @@ trailer
 startxref
 %d
 %%EOF`, pageCount*2+3, generateXrefEntries(pageCount), pageCount*2+3, len(multiPageContent)-6)
-	
+
 	return []byte(multiPageContent)
 }
 
@@ -711,17 +711,17 @@ func generateXrefEntries(pageCount int) string {
 	var entries []string
 	entries = append(entries, "0000000010 00000 n ")
 	entries = append(entries, "0000000079 00000 n ")
-	
+
 	// 添加页面对象引用
 	for i := 1; i <= pageCount; i++ {
 		entries = append(entries, fmt.Sprintf("000000%04d 00000 n ", 1000+i*100))
 	}
-	
+
 	// 添加内容流引用
 	for i := 1; i <= pageCount; i++ {
 		entries = append(entries, fmt.Sprintf("000000%04d 00000 n ", 2000+i*100))
 	}
-	
+
 	return strings.Join(entries, "\n")
 }
 
@@ -732,13 +732,13 @@ func BenchmarkPDFWriter(b *testing.B) {
 	defer os.RemoveAll(testDir)
 
 	options := &WriterOptions{
-		MaxRetries:       1,
-		RetryDelay:       time.Millisecond * 10,
-		BackupEnabled:    false,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        1,
+		RetryDelay:        time.Millisecond * 10,
+		BackupEnabled:     false,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
+		WriteXRefStream:   true,
 	}
 
 	content := createWriterTestPDFContent("Benchmark content")
@@ -747,7 +747,7 @@ func BenchmarkPDFWriter(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		outputPath := filepath.Join(testDir, fmt.Sprintf("benchmark_%d.pdf", i))
-		
+
 		writer, err := NewPDFWriter(outputPath, options)
 		if err != nil {
 			b.Fatalf("Failed to create writer: %v", err)
@@ -791,13 +791,13 @@ func BenchmarkPDFWriterConcurrent(b *testing.B) {
 	b.Logf("Benchmarking with %d goroutines", goroutines)
 
 	options := &WriterOptions{
-		MaxRetries:       1,
-		RetryDelay:       time.Millisecond * 10,
-		BackupEnabled:    false,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        1,
+		RetryDelay:        time.Millisecond * 10,
+		BackupEnabled:     false,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
+		WriteXRefStream:   true,
 	}
 
 	content := createWriterTestPDFContent("Concurrent benchmark content")
@@ -858,22 +858,22 @@ func BenchmarkPDFWriterMemory(b *testing.B) {
 	defer os.RemoveAll(testDir)
 
 	options := &WriterOptions{
-		MaxRetries:       1,
-		RetryDelay:       time.Millisecond * 10,
-		BackupEnabled:    false,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        1,
+		RetryDelay:        time.Millisecond * 10,
+		BackupEnabled:     false,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
+		WriteXRefStream:   true,
 	}
 
 	// 测试不同大小的内容
 	sizes := []int{1, 10, 50, 100}
-	
+
 	for _, pageCount := range sizes {
 		b.Run(fmt.Sprintf("Pages_%d", pageCount), func(b *testing.B) {
 			content := createMultiPagePDFContent(pageCount, "Memory benchmark content")
-			
+
 			var m runtime.MemStats
 			runtime.ReadMemStats(&m)
 			initialAlloc := m.Alloc
@@ -882,7 +882,7 @@ func BenchmarkPDFWriterMemory(b *testing.B) {
 
 			for i := 0; i < b.N; i++ {
 				outputPath := filepath.Join(testDir, fmt.Sprintf("memory_bench_%d_%d.pdf", pageCount, i))
-				
+
 				writer, err := NewPDFWriter(outputPath, options)
 				if err != nil {
 					b.Fatalf("Failed to create writer: %v", err)
@@ -932,13 +932,13 @@ func BenchmarkPDFWriterLarge(b *testing.B) {
 	b.Logf("Benchmarking with %d pages", pageCount)
 
 	options := &WriterOptions{
-		MaxRetries:       1,
-		RetryDelay:       time.Millisecond * 10,
-		BackupEnabled:    false,
-		TempDirectory:    testDir,
-		ValidationMode:   "relaxed",
+		MaxRetries:        1,
+		RetryDelay:        time.Millisecond * 10,
+		BackupEnabled:     false,
+		TempDirectory:     testDir,
+		ValidationMode:    "relaxed",
 		WriteObjectStream: true,
-		WriteXRefStream:  true,
+		WriteXRefStream:   true,
 	}
 
 	content := createMultiPagePDFContent(pageCount, "Large benchmark content")
@@ -947,7 +947,7 @@ func BenchmarkPDFWriterLarge(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		outputPath := filepath.Join(testDir, fmt.Sprintf("large_benchmark_%d.pdf", i))
-		
+
 		writer, err := NewPDFWriter(outputPath, options)
 		if err != nil {
 			b.Fatalf("Failed to create writer: %v", err)

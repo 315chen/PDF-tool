@@ -12,14 +12,14 @@ import (
 
 // PasswordDialog 密码输入对话框
 type PasswordDialog struct {
-	window       fyne.Window
-	dialog       *dialog.CustomDialog
+	window        fyne.Window
+	dialog        *dialog.CustomDialog
 	passwordEntry *widget.Entry
 	rememberCheck *widget.Check
-	result       chan PasswordDialogResult
-	filePath     string
-	attempt      int
-	lastError    error
+	result        chan PasswordDialogResult
+	filePath      string
+	attempt       int
+	lastError     error
 }
 
 // PasswordDialogResult 密码对话框结果

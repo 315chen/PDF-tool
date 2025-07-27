@@ -486,9 +486,9 @@ func (m *MockErrorHandler) Reset() {
 
 // MockUIStateHandler 模拟UI状态处理器
 type MockUIStateHandler struct {
-	mutex       sync.RWMutex
-	states      []bool
-	callCount   int
+	mutex        sync.RWMutex
+	states       []bool
+	callCount    int
 	currentState bool
 }
 

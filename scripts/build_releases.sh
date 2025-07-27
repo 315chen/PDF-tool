@@ -32,11 +32,34 @@ build_platform() {
     local GOARCH=$2
     local EXT=$3
     local PLATFORM_NAME=$4
-    
+
     echo "构建 ${PLATFORM_NAME} (${GOOS}/${GOARCH})..."
-    
-    # 英文版本
+
+    # 设置CGO环境变量 - Fyne需要CGO支持
+    export CGO_ENABLED=1
+
+    # 根据平台设置特定的环境变量和构建标志
+    local BUILD_FLAGS=""
+    case "${GOOS}" in
+        "darwin")
+            if [ "${GOARCH}" = "arm64" ]; then
+                export CC="clang"
+                export CXX="clang++"
+            fi
+            ;;
+        "windows")
+            # Windows需要特殊处理，使用静态链接
+            BUILD_FLAGS="-tags static"
+            ;;
+        "linux")
+            # Linux使用静态链接以提高兼容性
+            BUILD_FLAGS="-tags static"
+            ;;
+    esac
+
+    # 构建
     GOOS=${GOOS} GOARCH=${GOARCH} go build \
+        ${BUILD_FLAGS} \
         -ldflags="${LDFLAGS}" \
         -o "${RELEASE_DIR}/pdf-merger-${PLATFORM_NAME}${EXT}" \
         ./cmd/pdfmerger
@@ -67,8 +90,8 @@ build_platform() {
     echo ""
 }
 
-# 构建当前平台版本
-echo "构建当前平台版本..."
+# 构建多平台版本
+echo "构建多平台版本..."
 echo ""
 
 # 检测当前平台
@@ -76,26 +99,23 @@ CURRENT_OS=$(go env GOOS)
 CURRENT_ARCH=$(go env GOARCH)
 
 echo "当前平台: ${CURRENT_OS}/${CURRENT_ARCH}"
+echo "开始跨平台构建..."
 echo ""
 
-# 构建当前平台版本
-case "${CURRENT_OS}" in
-    "darwin")
-        build_platform "darwin" "amd64" "" "macos-intel"
-        ;;
-    "windows")
-        build_platform "windows" "amd64" ".exe" "windows-64bit"
-        ;;
-    "linux")
-        build_platform "linux" "amd64" "" "linux-64bit"
-        ;;
-    *)
-        echo "不支持的平台: ${CURRENT_OS}"
-        exit 1
-        ;;
-esac
+# 构建所有支持的平台
+echo "构建 macOS Intel 版本..."
+build_platform "darwin" "amd64" "" "macos-intel"
 
-echo "注意: 其他平台版本需要在对应系统上构建"
+echo "构建 macOS Apple Silicon 版本..."
+build_platform "darwin" "arm64" "" "macos-apple-silicon"
+
+echo "构建 Windows 64位版本..."
+build_platform "windows" "amd64" ".exe" "windows-64bit"
+
+echo "构建 Linux 64位版本..."
+build_platform "linux" "amd64" "" "linux-64bit"
+
+echo "所有平台构建完成！"
 
 echo "=== 构建完成 ==="
 echo ""

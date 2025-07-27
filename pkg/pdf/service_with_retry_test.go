@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 	"time"
-	
+
 	"github.com/user/pdf-merger/internal/model"
 )
 
@@ -69,7 +69,7 @@ func (m *MockPDFService) IsPDFEncrypted(filePath string) (bool, error) {
 func TestNewServiceWithRetry(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	if service.baseService != mockService {
 		t.Error("Base service not set correctly")
 	}
@@ -84,9 +84,9 @@ func TestNewServiceWithRetry(t *testing.T) {
 func TestServiceWithRetry_MergePDFs_Success(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	err := service.MergePDFs("main.pdf", []string{"add1.pdf", "add2.pdf"}, "output.pdf", nil)
-	
+
 	if err != nil {
 		t.Errorf("Expected success, got error: %v", err)
 	}
@@ -101,9 +101,9 @@ func TestServiceWithRetry_MergePDFs_WithRetry(t *testing.T) {
 		failureCount: 2, // 前两次失败，第三次成功
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	err := service.MergePDFs("main.pdf", []string{"add1.pdf"}, "output.pdf", nil)
-	
+
 	if err != nil {
 		t.Errorf("Expected success after retry, got error: %v", err)
 	}
@@ -115,10 +115,10 @@ func TestServiceWithRetry_MergePDFs_WithRetry(t *testing.T) {
 func TestServiceWithRetry_MergePDFsWithContext_Success(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	ctx := context.Background()
 	err := service.MergePDFsWithContext(ctx, "main.pdf", []string{"add1.pdf"}, "output.pdf", nil)
-	
+
 	if err != nil {
 		t.Errorf("Expected success, got error: %v", err)
 	}
@@ -130,23 +130,23 @@ func TestServiceWithRetry_MergePDFsWithContext_Cancellation(t *testing.T) {
 		failureCount: 10, // 持续失败
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	// 100ms后取消
 	go func() {
 		time.Sleep(100 * time.Millisecond)
 		cancel()
 	}()
-	
+
 	start := time.Now()
 	err := service.MergePDFsWithContext(ctx, "main.pdf", []string{"add1.pdf"}, "output.pdf", nil)
 	duration := time.Since(start)
-	
+
 	if err == nil {
 		t.Error("Expected error due to cancellation")
 	}
-	
+
 	// 应该在取消时间附近结束
 	if duration > 200*time.Millisecond {
 		t.Errorf("Operation took too long after cancellation: %v", duration)
@@ -159,9 +159,9 @@ func TestServiceWithRetry_ValidatePDF(t *testing.T) {
 		failureCount: 1, // 第一次失败，第二次成功
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	err := service.ValidatePDF("test.pdf")
-	
+
 	if err != nil {
 		t.Errorf("Expected success after retry, got error: %v", err)
 	}
@@ -176,9 +176,9 @@ func TestServiceWithRetry_GetPDFInfo(t *testing.T) {
 		failureCount: 1, // 第一次失败，第二次成功
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	info, err := service.GetPDFInfo("test.pdf")
-	
+
 	if err != nil {
 		t.Errorf("Expected success after retry, got error: %v", err)
 	}
@@ -196,7 +196,7 @@ func TestServiceWithRetry_GetPDFInfo(t *testing.T) {
 func TestServiceWithRetry_BatchMergePDFs(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	jobs := []model.MergeJob{
 		{
 			ID:              "job1",
@@ -213,13 +213,13 @@ func TestServiceWithRetry_BatchMergePDFs(t *testing.T) {
 			Status:          model.JobPending,
 		},
 	}
-	
+
 	errors := service.BatchMergePDFs(jobs)
-	
+
 	if len(errors) != 0 {
 		t.Errorf("Expected no errors, got %d", len(errors))
 	}
-	
+
 	for _, job := range jobs {
 		if job.Status != model.JobCompleted {
 			t.Errorf("Expected job %s to be completed, got status %v", job.ID, job.Status)
@@ -233,7 +233,7 @@ func TestServiceWithRetry_BatchMergePDFs_WithErrors(t *testing.T) {
 		failureCount: 10, // 持续失败
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	jobs := []model.MergeJob{
 		{
 			ID:              "job1",
@@ -243,13 +243,13 @@ func TestServiceWithRetry_BatchMergePDFs_WithErrors(t *testing.T) {
 			Status:          model.JobPending,
 		},
 	}
-	
+
 	errors := service.BatchMergePDFs(jobs)
-	
+
 	if len(errors) != 1 {
 		t.Errorf("Expected 1 error, got %d", len(errors))
 	}
-	
+
 	if jobs[0].Status != model.JobFailed {
 		t.Errorf("Expected job to be failed, got status %v", jobs[0].Status)
 	}
@@ -261,10 +261,10 @@ func TestServiceWithRetry_BatchMergePDFs_WithErrors(t *testing.T) {
 func TestServiceWithRetry_BatchValidatePDFs(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	files := []string{"file1.pdf", "file2.pdf", "file3.pdf"}
 	results := service.BatchValidatePDFs(files)
-	
+
 	if len(results) != 0 {
 		t.Errorf("Expected no validation errors, got %d", len(results))
 	}
@@ -276,14 +276,14 @@ func TestServiceWithRetry_BatchValidatePDFs_WithErrors(t *testing.T) {
 		failureCount: 10, // 持续失败
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	files := []string{"file1.pdf", "file2.pdf"}
 	results := service.BatchValidatePDFs(files)
-	
+
 	if len(results) != 2 {
 		t.Errorf("Expected 2 validation errors, got %d", len(results))
 	}
-	
+
 	for _, file := range files {
 		if _, exists := results[file]; !exists {
 			t.Errorf("Expected error for file %s", file)
@@ -294,20 +294,20 @@ func TestServiceWithRetry_BatchValidatePDFs_WithErrors(t *testing.T) {
 func TestServiceWithRetry_GetServiceStats(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	stats := service.GetServiceStats()
-	
+
 	expectedKeys := []string{
 		"service_type", "retry_enabled", "recovery_enabled",
 		"error_count", "has_errors", "alloc_mb",
 	}
-	
+
 	for _, key := range expectedKeys {
 		if _, exists := stats[key]; !exists {
 			t.Errorf("Expected key %s to exist in stats", key)
 		}
 	}
-	
+
 	if stats["service_type"] != "PDFServiceWithRetry" {
 		t.Errorf("Expected service_type to be PDFServiceWithRetry, got %v", stats["service_type"])
 	}
@@ -322,22 +322,22 @@ func TestServiceWithRetry_ErrorManagement(t *testing.T) {
 		failureCount: 10, // 持续失败
 	}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	// 执行一些会失败的操作
 	service.MergePDFs("main.pdf", []string{"add.pdf"}, "output.pdf", nil)
 	service.ValidatePDF("test.pdf")
-	
+
 	// 检查错误收集
 	errors := service.GetErrors()
 	if len(errors) == 0 {
 		t.Error("Expected errors to be collected")
 	}
-	
+
 	summary := service.GetErrorSummary()
 	if summary == "没有错误" {
 		t.Error("Expected error summary to contain errors")
 	}
-	
+
 	// 清空错误
 	service.ClearErrors()
 	errors = service.GetErrors()
@@ -349,16 +349,16 @@ func TestServiceWithRetry_ErrorManagement(t *testing.T) {
 func TestServiceWithRetry_RobustFileOperation(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	// 测试不存在的文件
 	err := service.RobustFileOperation("/nonexistent/file.pdf", func(path string) error {
 		return nil
 	})
-	
+
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
 	}
-	
+
 	pdfErr, ok := err.(*PDFError)
 	if !ok || pdfErr.Type != ErrorInvalidFile {
 		t.Errorf("Expected ErrorInvalidFile, got %v", err)
@@ -368,10 +368,10 @@ func TestServiceWithRetry_RobustFileOperation(t *testing.T) {
 func TestServiceWithRetry_MemoryAwareMerge_SmallBatch(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	files := []string{"file1.pdf", "file2.pdf", "file3.pdf"}
 	err := service.MemoryAwareMerge(files, "output.pdf", 5)
-	
+
 	if err != nil {
 		t.Errorf("Expected success for small batch, got error: %v", err)
 	}
@@ -383,14 +383,14 @@ func TestServiceWithRetry_MemoryAwareMerge_SmallBatch(t *testing.T) {
 func TestServiceWithRetry_MemoryAwareMerge_EmptyFiles(t *testing.T) {
 	mockService := &MockPDFService{}
 	service := NewServiceWithRetry(mockService, 100)
-	
+
 	files := []string{}
 	err := service.MemoryAwareMerge(files, "output.pdf", 5)
-	
+
 	if err == nil {
 		t.Error("Expected error for empty files")
 	}
-	
+
 	pdfErr, ok := err.(*PDFError)
 	if !ok || pdfErr.Type != ErrorInvalidFile {
 		t.Errorf("Expected ErrorInvalidFile, got %v", err)

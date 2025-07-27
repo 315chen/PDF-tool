@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	
+
 	"github.com/user/pdf-merger/internal/model"
 )
 
@@ -21,7 +21,7 @@ type ServiceWithRetry struct {
 func NewServiceWithRetry(baseService PDFService, maxMemoryMB int64) *ServiceWithRetry {
 	recoveryManager := NewRecoveryManager(maxMemoryMB)
 	retryManager := NewRetryManager(DefaultRetryConfig(), NewDefaultErrorHandler(3))
-	
+
 	return &ServiceWithRetry{
 		baseService:     baseService,
 		recoveryManager: recoveryManager,
@@ -34,7 +34,7 @@ func (s *ServiceWithRetry) MergePDFs(mainFile string, additionalFiles []string, 
 	operation := func() error {
 		return s.baseService.MergePDFs(mainFile, additionalFiles, outputPath, progressWriter)
 	}
-	
+
 	return s.recoveryManager.ExecuteWithRecovery(operation)
 }
 
@@ -47,10 +47,10 @@ func (s *ServiceWithRetry) MergePDFsWithContext(ctx context.Context, mainFile st
 			return NewPDFError(ErrorIO, "操作被取消", "", ctx.Err())
 		default:
 		}
-		
+
 		return s.baseService.MergePDFs(mainFile, additionalFiles, outputPath, progressWriter)
 	}
-	
+
 	return s.retryManager.ExecuteWithContext(ctx, operation)
 }
 
@@ -59,7 +59,7 @@ func (s *ServiceWithRetry) ValidatePDF(filePath string) error {
 	operation := func() error {
 		return s.baseService.ValidatePDF(filePath)
 	}
-	
+
 	return s.retryManager.Execute(operation)
 }
 
@@ -67,28 +67,28 @@ func (s *ServiceWithRetry) ValidatePDF(filePath string) error {
 func (s *ServiceWithRetry) GetPDFInfo(filePath string) (*PDFInfo, error) {
 	var result *PDFInfo
 	var err error
-	
+
 	operation := func() error {
 		result, err = s.baseService.GetPDFInfo(filePath)
 		return err
 	}
-	
+
 	retryErr := s.retryManager.Execute(operation)
 	if retryErr != nil {
 		return nil, retryErr
 	}
-	
+
 	return result, nil
 }
 
 // BatchMergePDFs 批量合并PDF文件，带错误收集和恢复
 func (s *ServiceWithRetry) BatchMergePDFs(jobs []model.MergeJob) []error {
 	var errors []error
-	
+
 	for i := range jobs {
 		job := &jobs[i]
 		job.Status = model.JobRunning
-		
+
 		err := s.MergePDFs(job.MainFile, job.AdditionalFiles, job.OutputPath, nil)
 		if err != nil {
 			job.Status = model.JobFailed
@@ -98,33 +98,33 @@ func (s *ServiceWithRetry) BatchMergePDFs(jobs []model.MergeJob) []error {
 			job.Status = model.JobCompleted
 		}
 	}
-	
+
 	return errors
 }
 
 // BatchValidatePDFs 批量验证PDF文件
 func (s *ServiceWithRetry) BatchValidatePDFs(filePaths []string) map[string]error {
 	results := make(map[string]error)
-	
+
 	for _, filePath := range filePaths {
 		err := s.ValidatePDF(filePath)
 		if err != nil {
 			results[filePath] = err
 		}
 	}
-	
+
 	return results
 }
 
 // GetServiceStats 获取服务统计信息
 func (s *ServiceWithRetry) GetServiceStats() map[string]interface{} {
 	stats := s.recoveryManager.GetRecoveryStats()
-	
+
 	// 添加服务特定的统计信息
 	stats["service_type"] = "PDFServiceWithRetry"
 	stats["retry_enabled"] = true
 	stats["recovery_enabled"] = true
-	
+
 	return stats
 }
 
@@ -150,18 +150,18 @@ func (s *ServiceWithRetry) RobustFileOperation(filePath string, operation func(s
 		if _, err := os.Stat(filePath); os.IsNotExist(err) {
 			return NewPDFError(ErrorInvalidFile, "文件不存在", filePath, err)
 		}
-		
+
 		// 检查文件权限
 		if file, err := os.Open(filePath); err != nil {
 			return NewPDFError(ErrorPermission, "无法打开文件", filePath, err)
 		} else {
 			file.Close()
 		}
-		
+
 		// 执行实际操作
 		return operation(filePath)
 	}
-	
+
 	return s.recoveryManager.ExecuteWithRecovery(robustOp)
 }
 
@@ -173,7 +173,7 @@ func (s *ServiceWithRetry) SafeOutputOperation(outputPath string, operation func
 		if err := os.MkdirAll(outputDir, 0755); err != nil {
 			return NewPDFError(ErrorPermission, "无法创建输出目录", outputDir, err)
 		}
-		
+
 		// 检查输出目录权限
 		if file, err := os.OpenFile(filepath.Join(outputDir, ".test"), os.O_CREATE|os.O_WRONLY, 0644); err != nil {
 			return NewPDFError(ErrorPermission, "输出目录无写权限", outputDir, err)
@@ -181,11 +181,11 @@ func (s *ServiceWithRetry) SafeOutputOperation(outputPath string, operation func
 			file.Close()
 			os.Remove(filepath.Join(outputDir, ".test"))
 		}
-		
+
 		// 执行实际操作
 		return operation(outputPath)
 	}
-	
+
 	return s.recoveryManager.ExecuteWithRecovery(safeOp)
 }
 
@@ -194,24 +194,24 @@ func (s *ServiceWithRetry) MemoryAwareMerge(files []string, outputPath string, m
 	if len(files) == 0 {
 		return NewPDFError(ErrorInvalidFile, "没有文件需要合并", "", nil)
 	}
-	
+
 	// 如果文件数量较少，直接合并
 	if len(files) <= maxFilesPerBatch {
 		return s.MergePDFs(files[0], files[1:], outputPath, nil)
 	}
-	
+
 	// 分批处理大量文件
 	tempFiles := make([]string, 0)
-	
+
 	for i := 0; i < len(files); i += maxFilesPerBatch {
 		end := i + maxFilesPerBatch
 		if end > len(files) {
 			end = len(files)
 		}
-		
+
 		batch := files[i:end]
 		tempOutput := fmt.Sprintf("%s.batch_%d.pdf", outputPath, i/maxFilesPerBatch)
-		
+
 		err := s.MergePDFs(batch[0], batch[1:], tempOutput, nil)
 		if err != nil {
 			// 清理已创建的临时文件
@@ -220,17 +220,17 @@ func (s *ServiceWithRetry) MemoryAwareMerge(files []string, outputPath string, m
 			}
 			return err
 		}
-		
+
 		tempFiles = append(tempFiles, tempOutput)
 	}
-	
+
 	// 合并所有批次文件
 	err := s.MergePDFs(tempFiles[0], tempFiles[1:], outputPath, nil)
-	
+
 	// 清理临时文件
 	for _, tempFile := range tempFiles {
 		os.Remove(tempFile)
 	}
-	
+
 	return err
 }

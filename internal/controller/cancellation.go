@@ -49,17 +49,17 @@ func (cm *CancellationManager) CancelJob(jobID string) error {
 		delete(cm.cancelRequests, jobID)
 	}
 	cm.requestMutex.Unlock()
-	
+
 	if !exists {
 		return fmt.Errorf("任务 %s 不存在或已完成", jobID)
 	}
-	
+
 	// 执行取消
 	cancelFunc()
-	
+
 	// 执行清理任务
 	cm.executeCleanup()
-	
+
 	return nil
 }
 
@@ -72,15 +72,15 @@ func (cm *CancellationManager) CancelAllJobs() error {
 	}
 	cm.cancelRequests = make(map[string]context.CancelFunc)
 	cm.requestMutex.Unlock()
-	
+
 	// 执行所有取消操作
 	for _, cancelFunc := range cancelFuncs {
 		cancelFunc()
 	}
-	
+
 	// 执行清理任务
 	cm.executeCleanup()
-	
+
 	return nil
 }
 
@@ -98,7 +98,7 @@ func (cm *CancellationManager) executeCleanup() {
 	copy(tasks, cm.cleanupTasks)
 	cm.cleanupTasks = cm.cleanupTasks[:0] // 清空任务列表
 	cm.cleanupMutex.Unlock()
-	
+
 	for _, task := range tasks {
 		if err := task.Execute(); err != nil {
 			// 清理失败不应该阻止其他清理任务
@@ -113,7 +113,7 @@ func (cm *CancellationManager) GracefulCancellation(jobID string, timeout time.D
 	if err := cm.CancelJob(jobID); err != nil {
 		return err
 	}
-	
+
 	// 等待任务完成清理
 	done := make(chan bool, 1)
 	go func() {
@@ -126,7 +126,7 @@ func (cm *CancellationManager) GracefulCancellation(jobID string, timeout time.D
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
-	
+
 	select {
 	case <-done:
 		return nil
@@ -187,13 +187,13 @@ func NewJobStateCleanupTask(controller *Controller) *JobStateCleanupTask {
 func (j *JobStateCleanupTask) Execute() error {
 	j.controller.jobMutex.Lock()
 	defer j.controller.jobMutex.Unlock()
-	
+
 	if j.controller.currentJob != nil {
 		j.controller.currentJob.Status = model.JobFailed
 		j.controller.currentJob.Error = fmt.Errorf("任务被用户取消")
 		j.controller.currentJob = nil
 	}
-	
+
 	return nil
 }
 
@@ -230,19 +230,19 @@ func (r *ResourceCleanupTask) Description() string {
 
 // CancellationContext 取消上下文包装器
 type CancellationContext struct {
-	ctx            context.Context
-	cancelFunc     context.CancelFunc
-	jobID          string
-	cancelManager  *CancellationManager
-	cleanupTasks   []CleanupTask
+	ctx           context.Context
+	cancelFunc    context.CancelFunc
+	jobID         string
+	cancelManager *CancellationManager
+	cleanupTasks  []CleanupTask
 }
 
 // NewCancellationContext 创建新的取消上下文
-func NewCancellationContext(parent context.Context, jobID string, 
+func NewCancellationContext(parent context.Context, jobID string,
 	cancelManager *CancellationManager) *CancellationContext {
-	
+
 	ctx, cancel := context.WithCancel(parent)
-	
+
 	cc := &CancellationContext{
 		ctx:           ctx,
 		cancelFunc:    cancel,
@@ -250,10 +250,10 @@ func NewCancellationContext(parent context.Context, jobID string,
 		cancelManager: cancelManager,
 		cleanupTasks:  make([]CleanupTask, 0),
 	}
-	
+
 	// 注册到取消管理器
 	cancelManager.RegisterCancellation(jobID, cc.Cancel)
-	
+
 	return cc
 }
 
@@ -265,7 +265,7 @@ func (cc *CancellationContext) Context() context.Context {
 // Cancel 取消操作
 func (cc *CancellationContext) Cancel() {
 	cc.cancelFunc()
-	
+
 	// 执行本地清理任务
 	for _, task := range cc.cleanupTasks {
 		if err := task.Execute(); err != nil {
@@ -312,24 +312,24 @@ func NewOperationExecutor(cancelManager *CancellationManager) *OperationExecutor
 }
 
 // ExecuteWithCancellation 执行支持取消的操作
-func (oe *OperationExecutor) ExecuteWithCancellation(parent context.Context, jobID string, 
+func (oe *OperationExecutor) ExecuteWithCancellation(parent context.Context, jobID string,
 	operation CancellationAwareOperation) error {
-	
+
 	// 创建取消上下文
 	cancelCtx := NewCancellationContext(parent, jobID, oe.cancelManager)
 	defer cancelCtx.Cancel()
-	
+
 	// 如果操作不支持取消，直接执行
 	if !operation.CanBeCancelled() {
 		return operation.Execute(cancelCtx)
 	}
-	
+
 	// 在单独的goroutine中执行操作
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- operation.Execute(cancelCtx)
 	}()
-	
+
 	// 等待操作完成或取消
 	select {
 	case err := <-errChan:

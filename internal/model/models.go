@@ -153,9 +153,9 @@ type Config struct {
 func DefaultConfig() *Config {
 	return &Config{
 		MaxMemoryUsage:    100 * 1024 * 1024, // 100MB
-		TempDirectory:     "",                 // 将使用系统临时目录
+		TempDirectory:     "",                // 将使用系统临时目录
 		CommonPasswords:   getDefaultPasswords(),
-		OutputDirectory:   "",                 // 将使用用户文档目录
+		OutputDirectory:   "", // 将使用用户文档目录
 		EnableAutoDecrypt: true,
 		WindowWidth:       800,
 		WindowHeight:      600,

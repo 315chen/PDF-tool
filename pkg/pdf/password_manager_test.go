@@ -12,7 +12,7 @@ import (
 func TestPasswordManager_Basic(t *testing.T) {
 	// 创建临时目录
 	tempDir := t.TempDir()
-	
+
 	// 创建密码管理器
 	pm := NewPasswordManager(&PasswordManagerOptions{
 		CacheDirectory:  tempDir,
@@ -169,13 +169,13 @@ func TestPasswordManager_OptimizedPasswordList(t *testing.T) {
 	// 模拟使用统计
 	testFile1 := filepath.Join(tempDir, "test1.pdf")
 	testFile2 := filepath.Join(tempDir, "test2.pdf")
-	
+
 	pm.SetPassword(testFile1, "frequent1") // 这会增加统计
 	pm.SetPassword(testFile2, "frequent1") // 再次使用，增加频率
 
 	// 获取优化列表
 	optimizedList := pm.GetOptimizedPasswordList()
-	
+
 	// 检查高频密码是否在前面
 	foundFrequent := false
 	for i, password := range optimizedList {
@@ -220,7 +220,7 @@ func TestPasswordManager_BatchTryPasswords(t *testing.T) {
 	// 测试批量尝试
 	passwords := []string{"wrong1", "wrong2", "correct", "wrong3"}
 	decryptedPath, usedPassword, err := pm.BatchTryPasswords(testFile, passwords, mockDecryptFunc)
-	
+
 	if err != nil {
 		t.Errorf("Expected success, got error: %v", err)
 	}
@@ -251,18 +251,18 @@ func TestPasswordManager_Stats(t *testing.T) {
 	// 模拟使用统计
 	testFile1 := filepath.Join(tempDir, "test1.pdf")
 	testFile2 := filepath.Join(tempDir, "test2.pdf")
-	
+
 	pm.SetPassword(testFile1, "password1")
 	pm.SetPassword(testFile2, "password1") // 重复使用
 	pm.SetPassword(testFile1, "password2")
 
 	// 获取统计信息
 	stats := pm.GetPasswordStats()
-	
+
 	if stats.TotalAttempts < 3 {
 		t.Errorf("Expected at least 3 attempts, got %d", stats.TotalAttempts)
 	}
-	
+
 	if stats.MostUsedPasswords["password1"] < 2 {
 		t.Error("password1 should be used at least 2 times")
 	}
@@ -381,4 +381,4 @@ func TestPasswordManager_EdgeCases(t *testing.T) {
 	if strength.Level != "medium" {
 		t.Errorf("Very long password should be medium, got %s (score: %d)", strength.Level, strength.Score)
 	}
-} 
+}

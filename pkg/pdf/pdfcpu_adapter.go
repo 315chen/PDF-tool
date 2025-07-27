@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
 	// TODO: 添加pdfcpu导入，当依赖可用时取消注释
 	// "github.com/pdfcpu/pdfcpu/pkg/api"
 	// "github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
@@ -84,7 +83,7 @@ func NewPDFCPUAdapter(config *PDFCPUConfig) (*PDFCPUAdapter, error) {
 	if fallbackMsg := availability.GetFallbackMessage(); fallbackMsg != "" && !adapter.useCLI {
 		adapter.logger.Printf("Warning: %s", fallbackMsg)
 	}
-	
+
 	return adapter, nil
 }
 
@@ -104,7 +103,7 @@ func (a *PDFCPUAdapter) ValidateFile(filePath string) error {
 
 	// TODO: 当pdfcpu Go库可用时，使用pdfcpu进行验证
 	// return api.ValidateFile(filePath, a.config)
-	
+
 	// 回退到基本验证
 	return a.basicPDFValidation(filePath)
 }
@@ -253,7 +252,7 @@ func (a *PDFCPUAdapter) basicEncryptionCheck(filePath string) (bool, error) {
 	}
 
 	content := string(buffer[:n])
-	
+
 	// 查找加密相关的关键字
 	encryptionKeywords := []string{
 		"/Encrypt",
@@ -327,9 +326,9 @@ func (a *PDFCPUAdapter) basicPDFValidation(filePath string) error {
 // extractBasicInfo 提取基本PDF信息
 func (a *PDFCPUAdapter) extractBasicInfo(info *PDFInfo) error {
 	// 临时实现：设置默认值
-	info.PageCount = 1 // TODO: 实际计算页数
+	info.PageCount = 1       // TODO: 实际计算页数
 	info.IsEncrypted = false // TODO: 检查加密状态
-	info.Title = "Unknown" // TODO: 读取实际标题
+	info.Title = "Unknown"   // TODO: 读取实际标题
 
 	return nil
 }
@@ -337,31 +336,31 @@ func (a *PDFCPUAdapter) extractBasicInfo(info *PDFInfo) error {
 // createPlaceholderMerge 创建占位符合并实现
 func (a *PDFCPUAdapter) createPlaceholderMerge(inputFiles []string, outputFile string) error {
 	a.logger.Printf("Creating placeholder merge (pdfcpu not available yet)")
-	
+
 	// 创建一个简单的占位符文件
-	content := fmt.Sprintf("Placeholder merge result for files: %v\nOutput: %s\nTimestamp: %s\n", 
+	content := fmt.Sprintf("Placeholder merge result for files: %v\nOutput: %s\nTimestamp: %s\n",
 		inputFiles, outputFile, time.Now().Format(time.RFC3339))
-	
+
 	return os.WriteFile(outputFile+".placeholder", []byte(content), 0644)
 }
 
 // createPlaceholderDecrypt 创建占位符解密实现
 func (a *PDFCPUAdapter) createPlaceholderDecrypt(inputFile, outputFile, password string) error {
 	a.logger.Printf("Creating placeholder decrypt (pdfcpu not available yet)")
-	
-	content := fmt.Sprintf("Placeholder decrypt result\nInput: %s\nOutput: %s\nPassword: %s\nTimestamp: %s\n", 
+
+	content := fmt.Sprintf("Placeholder decrypt result\nInput: %s\nOutput: %s\nPassword: %s\nTimestamp: %s\n",
 		inputFile, outputFile, password, time.Now().Format(time.RFC3339))
-	
+
 	return os.WriteFile(outputFile+".placeholder", []byte(content), 0644)
 }
 
 // createPlaceholderOptimize 创建占位符优化实现
 func (a *PDFCPUAdapter) createPlaceholderOptimize(inputFile, outputFile string) error {
 	a.logger.Printf("Creating placeholder optimize (pdfcpu not available yet)")
-	
-	content := fmt.Sprintf("Placeholder optimize result\nInput: %s\nOutput: %s\nTimestamp: %s\n", 
+
+	content := fmt.Sprintf("Placeholder optimize result\nInput: %s\nOutput: %s\nTimestamp: %s\n",
 		inputFile, outputFile, time.Now().Format(time.RFC3339))
-	
+
 	return os.WriteFile(outputFile+".placeholder", []byte(content), 0644)
 }
 
@@ -372,7 +371,7 @@ func mapPDFCPUError(err error) *PDFError {
 	}
 
 	errMsg := err.Error()
-	
+
 	switch {
 	case strings.Contains(errMsg, "validation"):
 		return &PDFError{

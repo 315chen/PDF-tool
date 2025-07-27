@@ -391,7 +391,7 @@ func TestE2E_PerformanceBenchmark(t *testing.T) {
 			// 创建测试文件
 			files := make([]string, tc.fileCount)
 			for i := 0; i < tc.fileCount; i++ {
-				files[i] = test_utils.CreateLargePDFFile(t, tempDir, 
+				files[i] = test_utils.CreateLargePDFFile(t, tempDir,
 					fmt.Sprintf("%s_%d.pdf", tc.name, i), tc.fileSize)
 			}
 

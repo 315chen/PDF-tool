@@ -7,16 +7,15 @@ import (
 )
 
 // MigrationMetrics 迁移/处理指标
-//
 type MigrationMetrics struct {
-	StartTime      time.Time     // 任务开始时间
-	EndTime        time.Time     // 任务结束时间
-	FilesProcessed int           // 处理文件数
-	PagesProcessed int           // 处理页数
-	BytesProcessed int64         // 处理字节数
-	ErrorCount     int           // 错误次数
-	LastError      error         // 最后一次错误
-	MemoryUsage    uint64        // 峰值内存占用（字节）
+	StartTime      time.Time              // 任务开始时间
+	EndTime        time.Time              // 任务结束时间
+	FilesProcessed int                    // 处理文件数
+	PagesProcessed int                    // 处理页数
+	BytesProcessed int64                  // 处理字节数
+	ErrorCount     int                    // 错误次数
+	LastError      error                  // 最后一次错误
+	MemoryUsage    uint64                 // 峰值内存占用（字节）
 	Custom         map[string]interface{} // 其他自定义指标
 	mutex          sync.Mutex
 }
@@ -107,4 +106,4 @@ func (m *MigrationMetrics) Report() map[string]interface{} {
 		"memory_usage":    m.MemoryUsage,
 		"custom":          m.Custom,
 	}
-} 
+}

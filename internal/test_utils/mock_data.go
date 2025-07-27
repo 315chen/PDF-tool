@@ -26,9 +26,9 @@ func (m *MockDataGenerator) GenerateFileEntry() *model.FileEntry {
 		Path:        fmt.Sprintf("/tmp/test_%d.pdf", m.rand.Intn(1000)),
 		DisplayName: fmt.Sprintf("test_%d.pdf", m.rand.Intn(1000)),
 		Size:        int64(m.rand.Intn(10000000)), // 0-10MB
-		PageCount:   m.rand.Intn(100) + 1,        // 1-100页
-		IsEncrypted: m.rand.Float32() < 0.2,      // 20%概率加密
-		IsValid:     m.rand.Float32() < 0.9,      // 90%概率有效
+		PageCount:   m.rand.Intn(100) + 1,         // 1-100页
+		IsEncrypted: m.rand.Float32() < 0.2,       // 20%概率加密
+		IsValid:     m.rand.Float32() < 0.9,       // 90%概率有效
 		Order:       m.rand.Intn(10),
 	}
 }
@@ -47,17 +47,17 @@ func (m *MockDataGenerator) GenerateFileEntries(count int) []*model.FileEntry {
 func (m *MockDataGenerator) GenerateMergeJob() *model.MergeJob {
 	additionalCount := m.rand.Intn(5) + 1 // 1-5个附加文件
 	additionalFiles := make([]string, additionalCount)
-	
+
 	for i := 0; i < additionalCount; i++ {
 		additionalFiles[i] = fmt.Sprintf("/tmp/additional_%d.pdf", i)
 	}
-	
+
 	job := model.NewMergeJob(
 		"/tmp/main.pdf",
 		additionalFiles,
 		"/tmp/output.pdf",
 	)
-	
+
 	// 随机设置任务状态
 	statuses := []model.JobStatus{
 		model.JobPending,
@@ -67,14 +67,14 @@ func (m *MockDataGenerator) GenerateMergeJob() *model.MergeJob {
 	}
 	job.Status = statuses[m.rand.Intn(len(statuses))]
 	job.Progress = m.rand.Float64() * 100
-	
+
 	return job
 }
 
 // GenerateConfig 生成模拟配置
 func (m *MockDataGenerator) GenerateConfig() *model.Config {
 	config := model.DefaultConfig()
-	
+
 	// 随机调整一些配置值
 	config.MaxMemoryUsage = int64(m.rand.Intn(500)+50) * 1024 * 1024 // 50-550MB
 	config.TempDirectory = fmt.Sprintf("/tmp/pdf-merger-%d", m.rand.Intn(1000))
@@ -82,7 +82,7 @@ func (m *MockDataGenerator) GenerateConfig() *model.Config {
 	config.EnableAutoDecrypt = m.rand.Float32() < 0.8 // 80%概率启用
 	config.WindowWidth = m.rand.Intn(400) + 600       // 600-1000
 	config.WindowHeight = m.rand.Intn(300) + 400      // 400-700
-	
+
 	return config
 }
 
@@ -117,7 +117,7 @@ func (m *MockDataGenerator) GenerateRandomError() error {
 		"无效格式",
 		"加密文件",
 	}
-	
+
 	return fmt.Errorf(errors[m.rand.Intn(len(errors))])
 }
 

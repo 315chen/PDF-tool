@@ -28,7 +28,7 @@ func SetupValidationTest(t *testing.T) *ValidationTestSuite {
 
 	validator := NewPDFValidator()
 	service := NewPDFService()
-	
+
 	adapter, err := NewPDFCPUAdapter(nil)
 	require.NoError(t, err)
 
@@ -208,7 +208,7 @@ func TestVariousPDFFormats(t *testing.T) {
 			if tc.expectValid && err == nil {
 				info, err := suite.validator.GetBasicPDFInfo(filePath)
 				if err == nil {
-					t.Logf("文件信息: 页数=%d, 加密=%t, 大小=%d", 
+					t.Logf("文件信息: 页数=%d, 加密=%t, 大小=%d",
 						info.PageCount, info.IsEncrypted, info.FileSize)
 				}
 			}
@@ -224,7 +224,7 @@ func TestVariousPDFFormats(t *testing.T) {
 			// 测试验证报告
 			report, err := suite.validator.GetValidationReport(filePath)
 			if err == nil {
-				t.Logf("验证报告: 有效=%t, 错误数=%d, 警告数=%d", 
+				t.Logf("验证报告: 有效=%t, 错误数=%d, 警告数=%d",
 					report.IsValid, len(report.Errors), len(report.Warnings))
 			}
 		})
@@ -356,8 +356,8 @@ endobj
 				filePath := filepath.Join(dir, "binary_corruption.pdf")
 				content := createPDFContent("1.4", false, false)
 				// 在中间插入二进制垃圾数据
-				corruptedContent := content[:len(content)/2] + 
-					"\x00\x01\x02\x03\xFF\xFE\xFD" + 
+				corruptedContent := content[:len(content)/2] +
+					"\x00\x01\x02\x03\xFF\xFE\xFD" +
 					content[len(content)/2:]
 				os.WriteFile(filePath, []byte(corruptedContent), 0644)
 				return filePath
@@ -469,9 +469,9 @@ startxref
 			// 测试基本验证器
 			err := suite.validator.ValidatePDFFile(filePath)
 			assert.Error(t, err, "应该检测到文件损坏")
-			
+
 			if pdfErr, ok := err.(*PDFError); ok {
-				assert.Equal(t, tc.expectedErr, pdfErr.Type, 
+				assert.Equal(t, tc.expectedErr, pdfErr.Type,
 					"错误类型应该匹配，期望: %v, 实际: %v", tc.expectedErr, pdfErr.Type)
 				t.Logf("检测到错误: %s (类型: %v)", pdfErr.Message, pdfErr.Type)
 			}
@@ -503,7 +503,7 @@ startxref
 			processedErr := handler.HandleError(err)
 			userMsg := handler.GetUserFriendlyMessage(processedErr)
 			shouldRetry := handler.ShouldRetry(processedErr)
-			
+
 			t.Logf("用户友好消息: %s", userMsg)
 			t.Logf("是否可重试: %t", shouldRetry)
 		})
@@ -515,10 +515,10 @@ func TestEncryptedPDFDetection(t *testing.T) {
 	suite := SetupValidationTest(t)
 
 	encryptionCases := []struct {
-		name        string
-		createFile  func(string) string
+		name            string
+		createFile      func(string) string
 		expectEncrypted bool
-		description string
+		description     string
 	}{
 		{
 			name: "Standard_Encryption",
@@ -529,7 +529,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "标准加密PDF文件",
+			description:     "标准加密PDF文件",
 		},
 		{
 			name: "AES_Encryption",
@@ -540,7 +540,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "AES加密PDF文件",
+			description:     "AES加密PDF文件",
 		},
 		{
 			name: "Password_Protected",
@@ -551,7 +551,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "密码保护PDF文件",
+			description:     "密码保护PDF文件",
 		},
 		{
 			name: "Owner_Password_Only",
@@ -562,7 +562,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "仅所有者密码保护",
+			description:     "仅所有者密码保护",
 		},
 		{
 			name: "User_Password_Only",
@@ -573,7 +573,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "仅用户密码保护",
+			description:     "仅用户密码保护",
 		},
 		{
 			name: "RC4_Encryption",
@@ -584,7 +584,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "RC4加密PDF文件",
+			description:     "RC4加密PDF文件",
 		},
 		{
 			name: "High_Security_Encryption",
@@ -595,7 +595,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "高安全级别加密",
+			description:     "高安全级别加密",
 		},
 		{
 			name: "Unencrypted_PDF",
@@ -606,7 +606,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: false,
-			description: "未加密PDF文件",
+			description:     "未加密PDF文件",
 		},
 		{
 			name: "False_Positive_Test",
@@ -618,7 +618,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: false,
-			description: "包含加密关键字但未加密的文件",
+			description:     "包含加密关键字但未加密的文件",
 		},
 		{
 			name: "Metadata_Only_Encryption",
@@ -629,7 +629,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				return filePath
 			},
 			expectEncrypted: true,
-			description: "仅元数据加密",
+			description:     "仅元数据加密",
 		},
 	}
 
@@ -641,7 +641,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 			// 测试基本加密检测
 			isEncrypted, err := suite.validator.isPDFEncrypted(filePath)
 			if err == nil {
-				assert.Equal(t, tc.expectEncrypted, isEncrypted, 
+				assert.Equal(t, tc.expectEncrypted, isEncrypted,
 					"加密状态检测不正确，期望: %t, 实际: %t", tc.expectEncrypted, isEncrypted)
 				t.Logf("基本检测结果: 加密=%t", isEncrypted)
 			} else {
@@ -651,7 +651,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 			// 测试PDF服务加密检测
 			isEncrypted, err = suite.service.IsPDFEncrypted(filePath)
 			if err == nil {
-				assert.Equal(t, tc.expectEncrypted, isEncrypted, 
+				assert.Equal(t, tc.expectEncrypted, isEncrypted,
 					"PDF服务加密检测不正确")
 				t.Logf("PDF服务检测结果: 加密=%t", isEncrypted)
 			} else {
@@ -661,9 +661,9 @@ func TestEncryptedPDFDetection(t *testing.T) {
 			// 测试获取PDF信息中的加密状态
 			info, err := suite.validator.GetBasicPDFInfo(filePath)
 			if err == nil {
-				assert.Equal(t, tc.expectEncrypted, info.IsEncrypted, 
+				assert.Equal(t, tc.expectEncrypted, info.IsEncrypted,
 					"PDF信息中的加密状态不正确")
-				t.Logf("PDF信息检测结果: 加密=%t, 页数=%d, 大小=%d", 
+				t.Logf("PDF信息检测结果: 加密=%t, 页数=%d, 大小=%d",
 					info.IsEncrypted, info.PageCount, info.FileSize)
 			} else {
 				t.Logf("获取PDF信息失败: %v", err)
@@ -672,9 +672,9 @@ func TestEncryptedPDFDetection(t *testing.T) {
 			// 测试权限检查
 			permissions, err := suite.validator.CheckPermissions(filePath)
 			if err == nil {
-				assert.Equal(t, tc.expectEncrypted, permissions.IsEncrypted, 
+				assert.Equal(t, tc.expectEncrypted, permissions.IsEncrypted,
 					"权限检查中的加密状态不正确")
-				t.Logf("权限检查结果: 加密=%t, 可打印=%t, 可复制=%t, 可修改=%t", 
+				t.Logf("权限检查结果: 加密=%t, 可打印=%t, 可复制=%t, 可修改=%t",
 					permissions.IsEncrypted, permissions.CanPrint, permissions.CanCopy, permissions.CanModify)
 			} else {
 				t.Logf("权限检查失败: %v", err)
@@ -685,7 +685,7 @@ func TestEncryptedPDFDetection(t *testing.T) {
 				err := suite.validator.ValidatePDFFile(filePath)
 				// 加密文件可能验证失败或需要特殊处理
 				t.Logf("加密文件验证结果: %v", err)
-				
+
 				// 测试解密功能（如果适配器支持）
 				if suite.adapter != nil {
 					tempOutput := filepath.Join(suite.tempDir, "decrypted_"+tc.name+".pdf")
@@ -756,7 +756,7 @@ func TestLargeFileValidationPerformance(t *testing.T) {
 			start := time.Now()
 			err := suite.validator.ValidatePDFFile(filePath)
 			duration := time.Since(start)
-			
+
 			t.Logf("基本验证器: 耗时=%v, 错误=%v", duration, err)
 			if duration > tc.maxDuration {
 				t.Logf("警告: 验证时间超过预期 (期望<%v, 实际=%v)", tc.maxDuration, duration)
@@ -766,14 +766,14 @@ func TestLargeFileValidationPerformance(t *testing.T) {
 			start = time.Now()
 			err = suite.service.ValidatePDF(filePath)
 			duration = time.Since(start)
-			
+
 			t.Logf("PDF服务: 耗时=%v, 错误=%v", duration, err)
 
 			// 测试pdfcpu适配器性能
 			start = time.Now()
 			err = suite.adapter.ValidateFile(filePath)
 			duration = time.Since(start)
-			
+
 			t.Logf("pdfcpu适配器: 耗时=%v, 错误=%v", duration, err)
 
 			// 测试内存使用
@@ -783,9 +783,9 @@ func TestLargeFileValidationPerformance(t *testing.T) {
 			start = time.Now()
 			info, err := suite.validator.GetBasicPDFInfo(filePath)
 			duration = time.Since(start)
-			
+
 			if err == nil {
-				t.Logf("获取信息: 耗时=%v, 页数=%d, 大小=%d", 
+				t.Logf("获取信息: 耗时=%v, 页数=%d, 大小=%d",
 					duration, info.PageCount, info.FileSize)
 			} else {
 				t.Logf("获取信息失败: 耗时=%v, 错误=%v", duration, err)
@@ -795,16 +795,16 @@ func TestLargeFileValidationPerformance(t *testing.T) {
 			start = time.Now()
 			err = suite.validator.ValidateWithStrictMode(filePath)
 			duration = time.Since(start)
-			
+
 			t.Logf("严格验证: 耗时=%v, 错误=%v", duration, err)
 
 			// 测试验证报告生成性能
 			start = time.Now()
 			report, err := suite.validator.GetValidationReport(filePath)
 			duration = time.Since(start)
-			
+
 			if err == nil {
-				t.Logf("验证报告: 耗时=%v, 有效=%t, 错误数=%d", 
+				t.Logf("验证报告: 耗时=%v, 有效=%t, 错误数=%d",
 					duration, report.IsValid, len(report.Errors))
 			} else {
 				t.Logf("验证报告失败: 耗时=%v, 错误=%v", duration, err)
@@ -833,10 +833,10 @@ func TestConcurrentValidation(t *testing.T) {
 		const numIterations = 20
 
 		start := time.Now()
-		
+
 		// 启动并发验证
 		results := make(chan error, numWorkers*numIterations*len(testFiles))
-		
+
 		for i := 0; i < numWorkers; i++ {
 			go func(workerID int) {
 				for j := 0; j < numIterations; j++ {
@@ -883,7 +883,7 @@ func TestConcurrentValidation(t *testing.T) {
 
 		start := time.Now()
 		results := make(chan error, numWorkers*numIterations*len(testFiles))
-		
+
 		for i := 0; i < numWorkers; i++ {
 			go func(workerID int) {
 				for j := 0; j < numIterations; j++ {
@@ -915,7 +915,7 @@ func TestConcurrentValidation(t *testing.T) {
 
 		start := time.Now()
 		results := make(chan string, numWorkers*numIterations*len(testFiles)*3)
-		
+
 		for i := 0; i < numWorkers; i++ {
 			go func(workerID int) {
 				for j := 0; j < numIterations; j++ {
@@ -927,7 +927,7 @@ func TestConcurrentValidation(t *testing.T) {
 						} else {
 							results <- "validate_error"
 						}
-						
+
 						// 获取信息
 						_, err = suite.validator.GetBasicPDFInfo(file)
 						if err == nil {
@@ -935,7 +935,7 @@ func TestConcurrentValidation(t *testing.T) {
 						} else {
 							results <- "info_error"
 						}
-						
+
 						// 检查权限
 						_, err = suite.validator.CheckPermissions(file)
 						if err == nil {
@@ -994,7 +994,7 @@ func TestStressValidation(t *testing.T) {
 
 	t.Run("High_Volume_Validation", func(t *testing.T) {
 		const totalOperations = 1000
-		
+
 		start := time.Now()
 		successCount := 0
 		errorCount := 0
@@ -1024,7 +1024,7 @@ func TestStressValidation(t *testing.T) {
 
 	t.Run("Memory_Stress_Test", func(t *testing.T) {
 		const iterations = 100
-		
+
 		var m1, m2 runtime.MemStats
 		runtime.GC()
 		runtime.ReadMemStats(&m1)
@@ -1035,7 +1035,7 @@ func TestStressValidation(t *testing.T) {
 				suite.validator.GetBasicPDFInfo(file)
 				suite.validator.CheckPermissions(file)
 			}
-			
+
 			// 每10次迭代强制GC
 			if i%10 == 0 {
 				runtime.GC()
@@ -1046,12 +1046,12 @@ func TestStressValidation(t *testing.T) {
 		runtime.ReadMemStats(&m2)
 
 		memoryUsed := m2.Alloc - m1.Alloc
-		t.Logf("内存压力测试: 使用内存=%d字节 (%.2f MB)", 
+		t.Logf("内存压力测试: 使用内存=%d字节 (%.2f MB)",
 			memoryUsed, float64(memoryUsed)/(1024*1024))
 
 		// 内存使用应该在合理范围内
 		maxMemoryMB := int64(100)
-		assert.Less(t, int64(memoryUsed), maxMemoryMB*1024*1024, 
+		assert.Less(t, int64(memoryUsed), maxMemoryMB*1024*1024,
 			"内存使用应该小于%dMB", maxMemoryMB)
 	})
 }
@@ -1143,13 +1143,12 @@ func TestEdgeCases(t *testing.T) {
 			}
 		})
 	}
-}// 辅助函数
-
+} // 辅助函数
 
 // createPDFContent 创建PDF内容
 func createPDFContent(version string, encrypted bool, multiPage bool) string {
 	header := fmt.Sprintf("%%PDF-%s\n", version)
-	
+
 	catalog := `1 0 obj
 <<
 /Type /Catalog
@@ -2320,17 +2319,17 @@ startxref
 // createLargeTestPDF 创建指定大小的测试PDF
 func createLargeTestPDF(t *testing.T, dir, filename string, sizeKB int) string {
 	filePath := filepath.Join(dir, filename)
-	
+
 	// 计算需要的填充数据大小
 	baseSize := 500 // 基础PDF结构大小
 	paddingSize := sizeKB*1024 - baseSize
 	if paddingSize < 0 {
 		paddingSize = 0
 	}
-	
+
 	// 创建填充数据
 	padding := strings.Repeat("A", paddingSize)
-	
+
 	content := fmt.Sprintf(`%%PDF-1.4
 1 0 obj
 <<
@@ -2383,31 +2382,31 @@ startxref
 
 	err := os.WriteFile(filePath, []byte(content), 0644)
 	require.NoError(t, err)
-	
+
 	return filePath
 }
 
 // testMemoryUsage 测试内存使用情况
 func testMemoryUsage(t *testing.T, filePath string, suite *ValidationTestSuite) {
 	var m1, m2 runtime.MemStats
-	
+
 	// 测试验证操作的内存使用
 	runtime.GC()
 	runtime.ReadMemStats(&m1)
-	
+
 	err := suite.validator.ValidatePDFFile(filePath)
-	
+
 	runtime.GC()
 	runtime.ReadMemStats(&m2)
-	
+
 	memoryUsed := m2.Alloc - m1.Alloc
 	maxMemoryLimit := int64(50 * 1024 * 1024) // 50MB限制
-	
-	t.Logf("内存使用: %d 字节 (%.2f MB), 验证结果: %v", 
+
+	t.Logf("内存使用: %d 字节 (%.2f MB), 验证结果: %v",
 		memoryUsed, float64(memoryUsed)/(1024*1024), err)
-	
+
 	if memoryUsed > uint64(maxMemoryLimit) {
-		t.Logf("警告: 内存使用超过限制 (限制: %d MB, 实际: %.2f MB)", 
+		t.Logf("警告: 内存使用超过限制 (限制: %d MB, 实际: %.2f MB)",
 			maxMemoryLimit/(1024*1024), float64(memoryUsed)/(1024*1024))
 	}
 }
@@ -2418,9 +2417,9 @@ func detectEncryptionLevel(filePath string) string {
 	if err != nil {
 		return "unknown"
 	}
-	
+
 	contentStr := string(content)
-	
+
 	if strings.Contains(contentStr, "/V 5") {
 		return "AES-256"
 	} else if strings.Contains(contentStr, "/V 4") {
@@ -2432,7 +2431,7 @@ func detectEncryptionLevel(filePath string) string {
 	} else if strings.Contains(contentStr, "/Encrypt") {
 		return "standard"
 	}
-	
+
 	return "none"
 }
 

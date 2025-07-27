@@ -12,12 +12,12 @@ func createTempDir(t testing.TB, prefix string) string {
 	if err != nil {
 		t.Fatalf("无法创建临时目录: %v", err)
 	}
-	
+
 	// 注册清理函数
 	t.Cleanup(func() {
 		os.RemoveAll(tempDir)
 	})
-	
+
 	return tempDir
 }
 
@@ -72,7 +72,7 @@ trailer
 startxref
 173
 %%EOF`)
-	
+
 	return createTestFile(t, dir, filename, pdfContent)
 }
 
@@ -117,7 +117,7 @@ trailer
 startxref
 999999
 %%EOF`)
-	
+
 	return createTestFile(t, dir, filename, corruptedContent)
 }
 

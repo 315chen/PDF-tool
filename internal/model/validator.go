@@ -185,7 +185,7 @@ func (v *Validator) ValidateFileList(fileList *FileList) error {
 
 	// 检查文件路径是否重复
 	pathMap := make(map[string]bool)
-	
+
 	if mainFile := fileList.GetMainFile(); mainFile != nil {
 		pathMap[mainFile.Path] = true
 	}
@@ -220,7 +220,7 @@ func (v *Validator) isValidFilePath(path string) bool {
 	if !strings.HasPrefix(path, "C:\\") && !strings.HasPrefix(path, "c:\\") {
 		invalidChars = "<>:\"|?*"
 	}
-	
+
 	if strings.ContainsAny(path, invalidChars) {
 		return false
 	}

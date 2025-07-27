@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 	"runtime"
-	
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
 )
@@ -69,16 +69,16 @@ func setupMacOSFont() {
 	os.Setenv("LANG", "zh_CN.UTF-8")
 	os.Setenv("LC_ALL", "zh_CN.UTF-8")
 	os.Setenv("LC_CTYPE", "zh_CN.UTF-8")
-	
+
 	// 尝试设置中文字体
 	macOSFonts := []string{
-		"/System/Library/Fonts/PingFang.ttc",           // PingFang SC (系统默认中文字体)
-		"/System/Library/Fonts/STHeiti Light.ttc",      // 华文黑体
-		"/System/Library/Fonts/Helvetica.ttc",          // Helvetica (备用)
-		"/Library/Fonts/Arial Unicode MS.ttf",          // Arial Unicode MS
-		"/System/Library/Fonts/Apple Color Emoji.ttc",  // 表情符号字体
+		"/System/Library/Fonts/PingFang.ttc",          // PingFang SC (系统默认中文字体)
+		"/System/Library/Fonts/STHeiti Light.ttc",     // 华文黑体
+		"/System/Library/Fonts/Helvetica.ttc",         // Helvetica (备用)
+		"/Library/Fonts/Arial Unicode MS.ttf",         // Arial Unicode MS
+		"/System/Library/Fonts/Apple Color Emoji.ttc", // 表情符号字体
 	}
-	
+
 	for _, fontPath := range macOSFonts {
 		if _, err := os.Stat(fontPath); err == nil {
 			os.Setenv("FYNE_FONT", fontPath)
@@ -86,7 +86,7 @@ func setupMacOSFont() {
 			break
 		}
 	}
-	
+
 	// 设置字体回退
 	os.Setenv("FONTCONFIG_PATH", "/etc/fonts")
 }
@@ -95,7 +95,7 @@ func setupMacOSFont() {
 func setupWindowsFont() {
 	os.Setenv("LANG", "zh_CN.UTF-8")
 	os.Setenv("LC_ALL", "zh_CN.UTF-8")
-	
+
 	// Windows通常能自动处理中文字体
 	log.Println("Windows字体环境设置完成")
 }
@@ -105,7 +105,7 @@ func setupLinuxFont() {
 	os.Setenv("LANG", "zh_CN.UTF-8")
 	os.Setenv("LC_ALL", "zh_CN.UTF-8")
 	os.Setenv("LC_CTYPE", "zh_CN.UTF-8")
-	
+
 	// 常见的Linux中文字体路径
 	linuxFonts := []string{
 		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
@@ -113,7 +113,7 @@ func setupLinuxFont() {
 		"/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
 		"/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
 	}
-	
+
 	for _, fontPath := range linuxFonts {
 		if _, err := os.Stat(fontPath); err == nil {
 			os.Setenv("FYNE_FONT", fontPath)

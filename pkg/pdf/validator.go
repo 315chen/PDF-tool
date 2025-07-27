@@ -214,7 +214,7 @@ func (v *PDFValidator) isPDFEncrypted(filePath string) (bool, error) {
 	content := string(buffer)
 	// 查找常见的加密相关关键字
 	encryptionKeywords := []string{"/Encrypt", "/Filter", "/V", "/R"}
-	
+
 	for _, keyword := range encryptionKeywords {
 		if strings.Contains(content, keyword) {
 			return true, nil
@@ -251,11 +251,11 @@ func (v *PDFValidator) ValidateWithStrictMode(filePath string) error {
 // GetValidationReport 获取详细的验证报告
 func (v *PDFValidator) GetValidationReport(filePath string) (*ValidationReport, error) {
 	report := &ValidationReport{
-		FilePath:    filePath,
-		IsValid:     false,
-		Errors:      []string{},
-		Warnings:    []string{},
-		Details:     make(map[string]interface{}),
+		FilePath: filePath,
+		IsValid:  false,
+		Errors:   []string{},
+		Warnings: []string{},
+		Details:  make(map[string]interface{}),
 	}
 
 	// 基本文件检查
@@ -268,7 +268,7 @@ func (v *PDFValidator) GetValidationReport(filePath string) (*ValidationReport, 
 	adapter, err := NewPDFCPUAdapter(nil)
 	if err == nil {
 		defer adapter.Close()
-		
+
 		// 验证文件
 		if err := adapter.ValidateFile(filePath); err != nil {
 			report.Errors = append(report.Errors, "pdfcpu验证失败: "+err.Error())
@@ -297,17 +297,17 @@ func (v *PDFValidator) CheckPermissions(filePath string) (*PDFPermissions, error
 	adapter, err := NewPDFCPUAdapter(nil)
 	if err == nil {
 		defer adapter.Close()
-		
+
 		// 获取文件信息
 		if info, err := adapter.GetFileInfo(filePath); err == nil {
 			permissions := &PDFPermissions{
-				CanPrint:    true,  // 默认权限
+				CanPrint:    true, // 默认权限
 				CanCopy:     true,
 				CanModify:   true,
 				CanAnnotate: true,
 				IsEncrypted: info.IsEncrypted,
 			}
-			
+
 			// 如果文件加密，权限可能受限
 			if info.IsEncrypted {
 				permissions.CanPrint = false
@@ -315,7 +315,7 @@ func (v *PDFValidator) CheckPermissions(filePath string) (*PDFPermissions, error
 				permissions.CanModify = false
 				permissions.CanAnnotate = false
 			}
-			
+
 			return permissions, nil
 		}
 	}

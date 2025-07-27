@@ -3,11 +3,11 @@
     "test_id": "report_suite_decrypt_test",
     "test_name": "PDF解密测试",
     "pdfcpu_result": {
-      "test_id": "pdfcpu_1753578760",
+      "test_id": "pdfcpu_1753625201",
       "test_name": "pdfcpu",
-      "start_time": "2025-07-27T09:12:40.44788+08:00",
-      "end_time": "2025-07-27T09:12:40.463849+08:00",
-      "duration": 15969287,
+      "start_time": "2025-07-27T22:06:41.637686+08:00",
+      "end_time": "2025-07-27T22:06:41.653306+08:00",
+      "duration": 15619647,
       "files_processed": 0,
       "bytes_processed": 0,
       "error_count": 0,
@@ -15,32 +15,32 @@
       "success": true
     },
     "unipdf_result": {
-      "test_id": "unipdf_1753578760",
+      "test_id": "unipdf_1753625201",
       "test_name": "unipdf",
-      "start_time": "2025-07-27T09:12:40.463948+08:00",
-      "end_time": "2025-07-27T09:12:40.479871+08:00",
-      "duration": 15923732,
+      "start_time": "2025-07-27T22:06:41.653355+08:00",
+      "end_time": "2025-07-27T22:06:41.668446+08:00",
+      "duration": 15090322,
       "files_processed": 0,
       "bytes_processed": 0,
       "error_count": 0,
       "memory_usage": 0,
       "success": true
     },
-    "performance_gain": -0.2860824334395982,
+    "performance_gain": -3.5077117638709105,
     "memory_reduction": 0,
-    "winner": "tie",
-    "recommendation": "两者性能相当",
-    "generated_at": "2025-07-27T09:12:40.447877+08:00"
+    "winner": "unipdf",
+    "recommendation": "建议使用UniPDF",
+    "generated_at": "2025-07-27T22:06:41.637684+08:00"
   },
   "report_suite_merge_test": {
     "test_id": "report_suite_merge_test",
     "test_name": "PDF合并测试",
     "pdfcpu_result": {
-      "test_id": "pdfcpu_1753578760",
+      "test_id": "pdfcpu_1753625201",
       "test_name": "pdfcpu",
-      "start_time": "2025-07-27T09:12:40.426423+08:00",
-      "end_time": "2025-07-27T09:12:40.437229+08:00",
-      "duration": 10806353,
+      "start_time": "2025-07-27T22:06:41.616908+08:00",
+      "end_time": "2025-07-27T22:06:41.626983+08:00",
+      "duration": 10075304,
       "files_processed": 0,
       "bytes_processed": 0,
       "error_count": 0,
@@ -48,21 +48,21 @@
       "success": true
     },
     "unipdf_result": {
-      "test_id": "unipdf_1753578760",
+      "test_id": "unipdf_1753625201",
       "test_name": "unipdf",
-      "start_time": "2025-07-27T09:12:40.43731+08:00",
-      "end_time": "2025-07-27T09:12:40.44744+08:00",
-      "duration": 10129845,
+      "start_time": "2025-07-27T22:06:41.627046+08:00",
+      "end_time": "2025-07-27T22:06:41.637264+08:00",
+      "duration": 10217831,
       "files_processed": 0,
       "bytes_processed": 0,
       "error_count": 0,
       "memory_usage": 0,
       "success": true
     },
-    "performance_gain": -6.678364772610045,
+    "performance_gain": 1.3948850788391391,
     "memory_reduction": 0,
-    "winner": "unipdf",
-    "recommendation": "建议使用UniPDF",
-    "generated_at": "2025-07-27T09:12:40.426401+08:00"
+    "winner": "pdfcpu",
+    "recommendation": "建议使用pdfcpu",
+    "generated_at": "2025-07-27T22:06:41.61682+08:00"
   }
 }

@@ -38,16 +38,16 @@ endobj
 >>
 endobj
 %%EOF`)
-	
+
 	if err := os.WriteFile(simplePDFPath, simplePDFContent, 0644); err != nil {
 		t.Fatalf("Failed to write simple PDF: %v", err)
 	}
 
 	tests := []struct {
-		name           string
-		mode           ValidationMode
-		expectSuccess  bool
-		description    string
+		name          string
+		mode          ValidationMode
+		expectSuccess bool
+		description   string
 	}{
 		{
 			name:          "基本验证模式",
@@ -72,7 +72,7 @@ endobj
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			reader, err := NewEnhancedPDFReader(simplePDFPath, tt.mode)
-			
+
 			if tt.expectSuccess {
 				if err != nil {
 					t.Logf("验证失败 (预期可能): %v", err)
@@ -83,16 +83,16 @@ endobj
 					return
 				}
 				defer reader.Close()
-				
+
 				// 验证读取器状态
 				if !reader.IsOpen() {
 					t.Error("Reader should be open")
 				}
-				
+
 				if reader.GetValidationMode() != tt.mode {
 					t.Errorf("Expected mode %v, got %v", tt.mode, reader.GetValidationMode())
 				}
-				
+
 				// 尝试获取信息
 				info, err := reader.GetInfo()
 				if err != nil {
@@ -101,7 +101,7 @@ endobj
 					if info.FilePath != simplePDFPath {
 						t.Errorf("Expected path %s, got %s", simplePDFPath, info.FilePath)
 					}
-					
+
 					if info.PageCount <= 0 {
 						t.Errorf("Expected positive page count, got %d", info.PageCount)
 					}
@@ -157,7 +157,7 @@ endobj
 >>
 endobj
 %%EOF`)
-	
+
 	if err := os.WriteFile(pdfWithMetadataPath, pdfWithMetadataContent, 0644); err != nil {
 		t.Fatalf("Failed to write PDF with metadata: %v", err)
 	}
@@ -222,7 +222,7 @@ func TestEnhancedPDFReader_ValidationModeSwitch(t *testing.T) {
 >>
 endobj
 %%EOF`)
-	
+
 	if err := os.WriteFile(simplePDFPath, simplePDFContent, 0644); err != nil {
 		t.Fatalf("Failed to write simple PDF: %v", err)
 	}
@@ -327,12 +327,12 @@ func TestEnhancedPDFReader_InvalidFiles(t *testing.T) {
 
 func TestEnhancedPDFReader_NonExistentFile(t *testing.T) {
 	nonExistentPath := "/path/that/does/not/exist.pdf"
-	
+
 	_, err := NewEnhancedPDFReader(nonExistentPath, ValidationBasic)
 	if err == nil {
 		t.Error("Expected error for non-existent file")
 	}
-	
+
 	// 检查错误类型
 	if pdfErr, ok := err.(*PDFError); ok {
 		if pdfErr.Type != ErrorIO {
@@ -360,7 +360,7 @@ func TestEnhancedPDFReader_CloseAndReopen(t *testing.T) {
 >>
 endobj
 %%EOF`)
-	
+
 	if err := os.WriteFile(simplePDFPath, simplePDFContent, 0644); err != nil {
 		t.Fatalf("Failed to write simple PDF: %v", err)
 	}

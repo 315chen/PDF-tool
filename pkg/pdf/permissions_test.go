@@ -71,7 +71,7 @@ func TestPDFReader_IndividualPermissionChecks(t *testing.T) {
 			if err != nil {
 				t.Errorf("Error checking %s: %v", test.name, err)
 			}
-			
+
 			// 对于未加密的测试文件，所有权限都应该为true
 			if !canDo {
 				t.Errorf("Expected %s to be true for unencrypted PDF", test.name)
@@ -101,7 +101,7 @@ func TestPDFReader_GetSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'encrypted' field to be boolean")
 	}
-	
+
 	// 对于测试文件，应该是未加密的
 	if encrypted {
 		t.Error("Expected test PDF to be unencrypted")
@@ -112,7 +112,7 @@ func TestPDFReader_GetSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'permissions' field to be string slice")
 	}
-	
+
 	if len(permissions) == 0 {
 		t.Error("Expected permissions to be non-empty")
 	}
@@ -122,7 +122,7 @@ func TestPDFReader_GetSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'has_user_password' field to be boolean")
 	}
-	
+
 	if hasUserPwd {
 		t.Error("Expected test PDF to have no user password")
 	}
@@ -131,7 +131,7 @@ func TestPDFReader_GetSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'has_owner_password' field to be boolean")
 	}
-	
+
 	if hasOwnerPwd {
 		t.Error("Expected test PDF to have no owner password")
 	}
@@ -158,7 +158,7 @@ func TestPDFReader_GetDetailedSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'security_level' field to be string")
 	}
-	
+
 	if securityLevel != "无保护" {
 		t.Errorf("Expected security level '无保护', got '%s'", securityLevel)
 	}
@@ -168,12 +168,12 @@ func TestPDFReader_GetDetailedSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'permission_summary' field to be map")
 	}
-	
+
 	totalPermissions, ok := permissionSummary["total_permissions"].(int)
 	if !ok {
 		t.Error("Expected 'total_permissions' to be int")
 	}
-	
+
 	if totalPermissions != 8 {
 		t.Errorf("Expected 8 total permissions, got %d", totalPermissions)
 	}
@@ -183,7 +183,7 @@ func TestPDFReader_GetDetailedSecurityInfo(t *testing.T) {
 	if !ok {
 		t.Error("Expected 'security_recommendations' field to be string slice")
 	}
-	
+
 	if len(recommendations) == 0 {
 		t.Error("Expected security recommendations to be non-empty")
 	}
@@ -198,7 +198,7 @@ func TestPDFReader_PermissionMethods_ClosedReader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create PDF reader: %v", err)
 	}
-	
+
 	// 关闭读取器
 	reader.Close()
 
@@ -302,17 +302,17 @@ func TestParsePermissionFlags(t *testing.T) {
 		flags    int
 		expected []string
 	}{
-		{0, []string{}}, // 无权限
-		{4, []string{"print"}}, // 只有打印权限 (位2)
+		{0, []string{}},                   // 无权限
+		{4, []string{"print"}},            // 只有打印权限 (位2)
 		{12, []string{"print", "modify"}}, // 打印和修改权限 (位2和3)
 		{-4, []string{"print", "modify", "copy", "annotate", "fill", "extract", "assemble", "print_high"}}, // 所有权限
 	}
 
 	for _, test := range tests {
 		result := adapter.parsePermissionFlags(test.flags)
-		
+
 		if len(result) != len(test.expected) {
-			t.Errorf("For flags %d, expected %d permissions, got %d", 
+			t.Errorf("For flags %d, expected %d permissions, got %d",
 				test.flags, len(test.expected), len(result))
 			continue
 		}

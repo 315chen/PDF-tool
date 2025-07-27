@@ -63,20 +63,37 @@
 
 **当前可用版本：v1.0.0**
 
-| 平台 | 下载链接 | 说明 |
-|------|----------|------|
-| macOS (Intel) | [pdf-merger-macos-intel](releases/v1.0.0/pdf-merger-macos-intel) | 适用于Intel Mac |
-| Windows 64位 | 🔄 即将发布 | Windows 64位系统 |
-| Linux 64位 | 🔄 即将发布 | Linux 64位系统 |
+##### GUI版本 (图形界面)
+| 平台 | 下载链接 | 大小 | 说明 |
+|------|----------|------|------|
+| macOS (Intel) | [pdf-merger-macos-intel](releases/v1.0.0/pdf-merger-macos-intel) | 19MB | Intel Mac图形界面版本 |
+| macOS (Apple Silicon) | [pdf-merger-macos-apple-silicon](releases/v1.0.0/pdf-merger-macos-apple-silicon) | 19MB | M1/M2 Mac图形界面版本 |
 
-**macOS用户快速开始：**
+##### CLI版本 (命令行界面)
+| 平台 | 下载链接 | 大小 | 说明 |
+|------|----------|------|------|
+| Windows 64位 | [pdf-merger-cli-windows-64bit.exe](releases/v1.0.0/pdf-merger-cli-windows-64bit.exe) | 2MB | Windows 64位命令行版本 |
+| Windows 32位 | [pdf-merger-cli-windows-32bit.exe](releases/v1.0.0/pdf-merger-cli-windows-32bit.exe) | 1MB | Windows 32位命令行版本 |
+| Linux 64位 | [pdf-merger-cli-linux-64bit](releases/v1.0.0/pdf-merger-cli-linux-64bit) | 2MB | Linux 64位命令行版本 |
+| Linux ARM64 | [pdf-merger-cli-linux-arm64](releases/v1.0.0/pdf-merger-cli-linux-arm64) | 2MB | Linux ARM64命令行版本 |
+| macOS (Intel) | [pdf-merger-cli-macos-intel](releases/v1.0.0/pdf-merger-cli-macos-intel) | 2MB | Intel Mac命令行版本 |
+| macOS (Apple Silicon) | [pdf-merger-cli-macos-apple-silicon](releases/v1.0.0/pdf-merger-cli-macos-apple-silicon) | 2MB | M1/M2 Mac命令行版本 |
+
+**快速开始：**
 ```bash
-# 下载文件后添加执行权限
-chmod +x pdf-merger-macos-intel
-./pdf-merger-macos-intel
+# GUI版本 (macOS)
+chmod +x pdf-merger-macos-*
+./pdf-merger-macos-*
+
+# CLI版本 (所有平台)
+chmod +x pdf-merger-cli-*  # Linux/macOS
+./pdf-merger-cli-* -input file1.pdf,file2.pdf -output merged.pdf
 ```
 
-> **💡 提示：** 完整的安装说明和故障排除请查看 [下载页面](DOWNLOAD.md)
+> **💡 提示：**
+> - GUI版本提供友好的图形界面，适合日常使用
+> - CLI版本适合自动化脚本和服务器环境
+> - 完整的安装说明请查看 [下载页面](DOWNLOAD.md) 和 [CLI使用指南](CLI_USAGE.md)
 
 #### 方式二：从源码构建
 ```bash

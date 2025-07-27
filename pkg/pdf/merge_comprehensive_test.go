@@ -115,7 +115,7 @@ func testBasicMerge(t *testing.T, testDir string, testFiles []string) {
 		t.Logf("进度更新 %d: %s", i+1, update)
 	}
 
-	t.Logf("基本合并测试完成: 处理文件=%d, 处理时间=%v, 内存使用=%d bytes", 
+	t.Logf("基本合并测试完成: 处理文件=%d, 处理时间=%v, 内存使用=%d bytes",
 		result.ProcessedFiles, result.ProcessingTime, result.MemoryUsage)
 }
 
@@ -160,13 +160,13 @@ func testLargeFileMerge(t *testing.T, testDir string) {
 	// 验证内存使用
 	memoryIncrease := afterMemory - beforeMemory
 	memoryIncreaseMB := float64(memoryIncrease) / (1024 * 1024)
-	
+
 	t.Logf("大文件合并内存使用: 增加 %.2f MB", memoryIncreaseMB)
 	assert.Less(t, memoryIncreaseMB, 100.0, "内存增加不应该超过100MB")
 
 	// 验证结果
 	assert.NotNil(t, result, "应该返回合并结果")
-	t.Logf("大文件合并完成: 处理文件=%d, 处理时间=%v, 内存使用=%d bytes", 
+	t.Logf("大文件合并完成: 处理文件=%d, 处理时间=%v, 内存使用=%d bytes",
 		result.ProcessedFiles, result.ProcessingTime, result.MemoryUsage)
 }
 
@@ -186,7 +186,7 @@ func testProgressAndCancel(t *testing.T, testDir string, testFiles []string) {
 	// 测试取消功能
 	t.Run("TestCancel", func(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
-		
+
 		// 100ms后取消
 		go func() {
 			time.Sleep(100 * time.Millisecond)
@@ -233,7 +233,7 @@ func testProgressAndCancel(t *testing.T, testDir string, testFiles []string) {
 
 		// 验证进度更新
 		assert.Greater(t, len(progressUpdates), 0, "应该有进度更新")
-		
+
 		// 验证进度值范围
 		for _, update := range progressUpdates {
 			parts := strings.Split(update, "%")
@@ -284,7 +284,7 @@ func testMergeQuality(t *testing.T, testDir string, testFiles []string) {
 	assert.Equal(t, len(testFiles), result.ProcessedFiles, "应该处理所有文件")
 	assert.Greater(t, result.TotalPages, 0, "总页数应该大于0")
 
-	t.Logf("合并质量测试: 处理文件=%d, 总页数=%d, 处理时间=%v", 
+	t.Logf("合并质量测试: 处理文件=%d, 总页数=%d, 处理时间=%v",
 		result.ProcessedFiles, result.TotalPages, result.ProcessingTime)
 }
 
@@ -301,7 +301,7 @@ func testConcurrentMerge(t *testing.T, testDir string, testFiles []string) {
 			defer wg.Done()
 
 			outputFile := filepath.Join(testDir, fmt.Sprintf("concurrent_output_%d.pdf", index))
-			
+
 			options := &MergeOptions{
 				MaxMemoryUsage:    50 * 1024 * 1024,
 				TempDirectory:     testDir,
@@ -433,7 +433,7 @@ func testMergeMemoryUsage(t *testing.T, testDir string, testFiles []string) {
 	memoryUsed := finalMemory - initialMemory
 	memoryUsedMB := float64(memoryUsed) / (1024 * 1024)
 
-	t.Logf("内存使用测试: 初始=%d bytes, 最终=%d bytes, 使用=%.2f MB", 
+	t.Logf("内存使用测试: 初始=%d bytes, 最终=%d bytes, 使用=%.2f MB",
 		initialMemory, finalMemory, memoryUsedMB)
 
 	// 验证内存使用在合理范围内
@@ -442,7 +442,7 @@ func testMergeMemoryUsage(t *testing.T, testDir string, testFiles []string) {
 
 	// 验证结果
 	assert.NotNil(t, result, "应该返回合并结果")
-	t.Logf("内存测试完成: 处理文件=%d, 处理时间=%v, 报告内存使用=%d bytes", 
+	t.Logf("内存测试完成: 处理文件=%d, 处理时间=%v, 报告内存使用=%d bytes",
 		result.ProcessedFiles, result.ProcessingTime, result.MemoryUsage)
 }
 
@@ -466,8 +466,8 @@ func testPerformanceComparison(t *testing.T, testDir string, testFiles []string)
 		MaxMemoryUsage:    100 * 1024 * 1024,
 		TempDirectory:     testDir,
 		EnableGC:          true,
-		UseStreaming:      true,  // 使用流式处理
-		OptimizeMemory:    true,  // 优化内存
+		UseStreaming:      true, // 使用流式处理
+		OptimizeMemory:    true, // 优化内存
 		ConcurrentWorkers: runtime.NumCPU(),
 	}
 
@@ -492,13 +492,13 @@ func testPerformanceComparison(t *testing.T, testDir string, testFiles []string)
 	t.Logf("性能对比测试:")
 	t.Logf("  标准合并: 耗时=%v, 错误=%v", standardDuration, standardErr)
 	if standardResult != nil {
-		t.Logf("  标准合并: 处理文件=%d, 内存使用=%d bytes", 
+		t.Logf("  标准合并: 处理文件=%d, 内存使用=%d bytes",
 			standardResult.ProcessedFiles, standardResult.MemoryUsage)
 	}
 
 	t.Logf("  优化合并: 耗时=%v, 错误=%v", optimizedDuration, optimizedErr)
 	if optimizedResult != nil {
-		t.Logf("  优化合并: 处理文件=%d, 内存使用=%d bytes", 
+		t.Logf("  优化合并: 处理文件=%d, 内存使用=%d bytes",
 			optimizedResult.ProcessedFiles, optimizedResult.MemoryUsage)
 	}
 
@@ -517,7 +517,7 @@ func testPerformanceComparison(t *testing.T, testDir string, testFiles []string)
 // createMergeTestPDFFiles 创建合并测试PDF文件
 func createMergeTestPDFFiles(t *testing.T, testDir string, count int) []string {
 	files := make([]string, count)
-	
+
 	for i := 0; i < count; i++ {
 		filename := filepath.Join(testDir, fmt.Sprintf("merge_test_%d.pdf", i+1))
 		content := createMergeTestPDFContent(i + 1)
@@ -525,14 +525,14 @@ func createMergeTestPDFFiles(t *testing.T, testDir string, count int) []string {
 		require.NoError(t, err, "创建合并测试文件失败")
 		files[i] = filename
 	}
-	
+
 	return files
 }
 
 // createLargeMergeTestFiles 创建大合并测试文件
 func createLargeMergeTestFiles(t *testing.T, testDir string, count int) []string {
 	files := make([]string, count)
-	
+
 	for i := 0; i < count; i++ {
 		filename := filepath.Join(testDir, fmt.Sprintf("large_merge_test_%d.pdf", i+1))
 		content := createLargeMergeTestPDFContent(i + 1)
@@ -540,7 +540,7 @@ func createLargeMergeTestFiles(t *testing.T, testDir string, count int) []string
 		require.NoError(t, err, "创建大合并测试文件失败")
 		files[i] = filename
 	}
-	
+
 	return files
 }
 
@@ -677,13 +677,13 @@ func BenchmarkPDFMerge(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		outputFile := filepath.Join(testDir, fmt.Sprintf("benchmark_output_%d.pdf", i))
-		
+
 		ctx := context.Background()
 		_, err := merger.MergeStreaming(ctx, testFiles, outputFile, nil)
 		if err != nil {
 			b.Fatalf("Benchmark merge failed: %v", err)
 		}
-		
+
 		// 清理输出文件
 		os.Remove(outputFile)
 	}
@@ -714,13 +714,13 @@ func BenchmarkPDFMergeLarge(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		outputFile := filepath.Join(testDir, fmt.Sprintf("large_benchmark_output_%d.pdf", i))
-		
+
 		ctx := context.Background()
 		_, err := merger.MergeStreaming(ctx, testFiles, outputFile, nil)
 		if err != nil {
 			b.Fatalf("Large file benchmark merge failed: %v", err)
 		}
-		
+
 		// 清理输出文件
 		os.Remove(outputFile)
 	}
@@ -729,7 +729,7 @@ func BenchmarkPDFMergeLarge(b *testing.B) {
 // createMergeTestPDFFilesForBenchmark 为基准测试创建合并测试PDF文件
 func createMergeTestPDFFilesForBenchmark(b *testing.B, testDir string, count int) []string {
 	files := make([]string, count)
-	
+
 	for i := 0; i < count; i++ {
 		filename := filepath.Join(testDir, fmt.Sprintf("benchmark_merge_test_%d.pdf", i+1))
 		content := createMergeTestPDFContent(i + 1)
@@ -739,14 +739,14 @@ func createMergeTestPDFFilesForBenchmark(b *testing.B, testDir string, count int
 		}
 		files[i] = filename
 	}
-	
+
 	return files
 }
 
 // createLargeMergeTestFilesForBenchmark 为基准测试创建大合并测试文件
 func createLargeMergeTestFilesForBenchmark(b *testing.B, testDir string, count int) []string {
 	files := make([]string, count)
-	
+
 	for i := 0; i < count; i++ {
 		filename := filepath.Join(testDir, fmt.Sprintf("large_benchmark_merge_test_%d.pdf", i+1))
 		content := createLargeMergeTestPDFContent(i + 1)
@@ -756,6 +756,6 @@ func createLargeMergeTestFilesForBenchmark(b *testing.B, testDir string, count i
 		}
 		files[i] = filename
 	}
-	
+
 	return files
-} 
+}

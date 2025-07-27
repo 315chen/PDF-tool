@@ -443,4 +443,4 @@ func TestRollbackManager_Performance(t *testing.T) {
 	if len(restoredContent) != len(largeContent) {
 		t.Errorf("文件大小不匹配，期望: %d, 实际: %d", len(largeContent), len(restoredContent))
 	}
-} 
+}

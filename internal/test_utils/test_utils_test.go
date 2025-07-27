@@ -107,8 +107,6 @@ func BenchmarkCreateTestFile(b *testing.B) {
 	}
 }
 
-
-
 func TestFileOperations(t *testing.T) {
 	tempDir := CreateTempDir(t, "file-ops")
 
@@ -128,9 +126,3 @@ func TestFileOperations(t *testing.T) {
 		t.Error("Non-existent file should not exist")
 	}
 }
-
-
-
-
-
-

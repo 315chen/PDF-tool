@@ -29,10 +29,10 @@ func NewTempFileManager(baseDir string) (*TempFileManager, error) {
 
 	// 创建以应用名称为前缀的临时目录
 	baseDir = filepath.Join(baseDir, "pdf-merger-temp")
-	
+
 	// 创建会话特定的目录（使用时间戳确保唯一性）
 	sessionDir := filepath.Join(baseDir, fmt.Sprintf("session_%d", time.Now().UnixNano()))
-	
+
 	// 确保目录存在
 	if err := os.MkdirAll(sessionDir, 0755); err != nil {
 		return nil, fmt.Errorf("无法创建临时目录: %v", err)
@@ -47,7 +47,7 @@ func NewTempFileManager(baseDir string) (*TempFileManager, error) {
 
 	// 设置清理定时器
 	manager.startCleanupTimer()
-	
+
 	// 设置终结器，确保在对象被垃圾回收时清理临时文件
 	runtime.SetFinalizer(manager, func(m *TempFileManager) {
 		m.Cleanup()
@@ -64,7 +64,7 @@ func (tm *TempFileManager) CreateTempFile(prefix string, suffix string) (string,
 	if prefix == "" {
 		prefix = "pdf_"
 	}
-	
+
 	if suffix == "" {
 		suffix = ".tmp"
 	}
@@ -260,7 +260,7 @@ func (tm *TempFileManager) isOwnedFile(filePath string) bool {
 	if err != nil {
 		return false
 	}
-	
+
 	// 检查文件是否在会话目录中
 	return strings.HasPrefix(absPath, tm.sessionDir)
 }

@@ -8,7 +8,7 @@ import (
 
 func TestNewPDFReader(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -41,7 +41,7 @@ func TestNewPDFReader(t *testing.T) {
 
 func TestPDFReader_Open(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -75,7 +75,7 @@ func TestPDFReader_Open(t *testing.T) {
 
 func TestPDFReader_GetInfo(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -109,7 +109,7 @@ func TestPDFReader_GetInfo(t *testing.T) {
 
 func TestPDFReader_GetPageCount(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -138,7 +138,7 @@ func TestPDFReader_GetPageCount(t *testing.T) {
 
 func TestPDFReader_ValidatePage(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -170,7 +170,7 @@ func TestPDFReader_ValidatePage(t *testing.T) {
 
 func TestPDFReader_ValidateStructure(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -195,7 +195,7 @@ func TestPDFReader_ValidateStructure(t *testing.T) {
 
 func TestPDFReader_IsEncrypted(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -225,7 +225,7 @@ func TestPDFReader_IsEncrypted(t *testing.T) {
 
 func TestPDFReader_StreamPages(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -260,7 +260,7 @@ func TestPDFReader_StreamPages(t *testing.T) {
 
 func TestPDFReader_GetMetadata(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -290,7 +290,7 @@ func TestPDFReader_GetMetadata(t *testing.T) {
 
 func TestPDFReader_GetFilePath(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)
@@ -320,7 +320,7 @@ func TestPDFReader_GetFilePath(t *testing.T) {
 
 func TestPDFReader_CloseAndReopen(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建测试PDF文件
 	file := filepath.Join(tempDir, "test.pdf")
 	content := createValidPDFContent(1)

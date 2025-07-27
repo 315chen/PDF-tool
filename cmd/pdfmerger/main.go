@@ -26,44 +26,44 @@ func main() {
 	w := a.NewWindow("PDF Merger Tool")
 	w.Resize(fyne.NewSize(800, 600))
 	w.CenterOnScreen()
-	
+
 	// 初始化服务
 	tempDir := createTempDir()
-	
+
 	// 创建服务实例
 	fileManager := createFileManager(tempDir)
 	pdfService := createPDFService()
-	
+
 	// 创建配置
 	config := model.DefaultConfig()
 	config.TempDirectory = tempDir
-	
+
 	// 创建控制器
 	ctrl := controller.NewController(pdfService, fileManager, config)
-	
+
 	// 创建事件处理器
 	eventHandler := controller.NewEventHandler(ctrl)
-	
+
 	// 创建UI
 	userInterface := ui.NewUI(w, ctrl)
-	
+
 	// 连接事件处理器和UI
 	setupEventHandling(userInterface, eventHandler)
-	
+
 	// 设置主窗口内容
 	w.SetContent(userInterface.BuildUI())
-	
+
 	// 添加应用程序关闭时的清理操作
 	w.SetCloseIntercept(func() {
 		// 清理临时文件
 		if err := fileManager.CleanupTempFiles(); err != nil {
 			log.Printf("清理临时文件时发生错误: %v", err)
 		}
-		
+
 		log.Println("应用程序正在关闭...")
 		a.Quit()
 	})
-	
+
 	// 运行应用程序
 	w.ShowAndRun()
 }
@@ -99,23 +99,22 @@ func setupEventHandling(ui *ui.UI, eventHandler *controller.EventHandler) {
 			ui.DisableControls()
 		}
 	})
-	
+
 	// 设置进度更新回调
 	eventHandler.SetProgressUpdateCallback(func(progress float64, status, detail string) {
 		ui.UpdateProgressWithStrings(progress, status, detail)
 	})
-	
+
 	// 设置错误回调
 	eventHandler.SetErrorCallback(func(err error) {
 		ui.ShowError(err)
 	})
-	
+
 	// 设置完成回调
 	eventHandler.SetCompletionCallback(func(message string) {
 		ui.ShowCompletion(message)
 	})
-	
+
 	// 设置UI的事件处理器
 	ui.SetEventHandler(eventHandler)
 }
-

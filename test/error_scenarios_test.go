@@ -65,7 +65,7 @@ func TestErrorScenarios_FileNotFound(t *testing.T) {
 				return err
 			},
 			Verify: func(t *testing.T, err error) bool {
-				return err != nil && (strings.Contains(err.Error(), "文件不存在") || 
+				return err != nil && (strings.Contains(err.Error(), "文件不存在") ||
 					strings.Contains(err.Error(), "文件无效"))
 			},
 		},
@@ -98,8 +98,8 @@ func TestErrorScenarios_InvalidFiles(t *testing.T) {
 				// 如果产生错误，应该包含相关关键词
 				// 如果没有错误，说明pdfcpu能够处理这个文件（这也是可以接受的）
 				if err != nil {
-					return strings.Contains(err.Error(), "损坏") || 
-						strings.Contains(err.Error(), "无效") || 
+					return strings.Contains(err.Error(), "损坏") ||
+						strings.Contains(err.Error(), "无效") ||
 						strings.Contains(err.Error(), "格式") ||
 						strings.Contains(err.Error(), "解析") ||
 						strings.Contains(err.Error(), "startxref") ||
@@ -125,7 +125,7 @@ func TestErrorScenarios_InvalidFiles(t *testing.T) {
 				return ctrl.ValidateFile(filePath)
 			},
 			Verify: func(t *testing.T, err error) bool {
-				return err != nil && (strings.Contains(err.Error(), "格式") || 
+				return err != nil && (strings.Contains(err.Error(), "格式") ||
 					strings.Contains(err.Error(), "无效"))
 			},
 		},
@@ -182,7 +182,7 @@ func TestErrorScenarios_PermissionDenied(t *testing.T) {
 				return ctrl.ValidateFile(filePath)
 			},
 			Verify: func(t *testing.T, err error) bool {
-				return err != nil && (strings.Contains(err.Error(), "权限") || 
+				return err != nil && (strings.Contains(err.Error(), "权限") ||
 					strings.Contains(err.Error(), "permission"))
 			},
 		},
@@ -212,7 +212,7 @@ func TestErrorScenarios_PermissionDenied(t *testing.T) {
 				return eventHandler.HandleOutputPathChanged(outputPath)
 			},
 			Verify: func(t *testing.T, err error) bool {
-				return err != nil && (strings.Contains(err.Error(), "权限") || 
+				return err != nil && (strings.Contains(err.Error(), "权限") ||
 					strings.Contains(err.Error(), "permission") ||
 					strings.Contains(err.Error(), "只读"))
 			},
@@ -248,7 +248,7 @@ func TestErrorScenarios_MemoryLimits(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				files := data.(map[string]string)
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
@@ -290,21 +290,21 @@ func TestErrorScenarios_ConcurrentAccess(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				files := data.(map[string]string)
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
 				ctrl := controller.NewController(pdfService, fileManager, config)
 
 				// 启动第一个任务
-				err1 := ctrl.StartMergeJob(files["main"], []string{files["additional"]}, 
+				err1 := ctrl.StartMergeJob(files["main"], []string{files["additional"]},
 					filepath.Join(tempDir, "output1.pdf"))
 				if err1 != nil {
 					return err1
 				}
 
 				// 立即尝试启动第二个任务
-				err2 := ctrl.StartMergeJob(files["main"], []string{files["additional"]}, 
+				err2 := ctrl.StartMergeJob(files["main"], []string{files["additional"]},
 					filepath.Join(tempDir, "output2.pdf"))
 
 				// 清理第一个任务
@@ -338,7 +338,7 @@ func TestErrorScenarios_InvalidParameters(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				params := data.(map[string]interface{})
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
@@ -367,7 +367,7 @@ func TestErrorScenarios_InvalidParameters(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				params := data.(map[string]interface{})
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
@@ -396,7 +396,7 @@ func TestErrorScenarios_InvalidParameters(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				params := data.(map[string]interface{})
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
@@ -436,7 +436,7 @@ func TestErrorScenarios_NetworkAndTimeout(t *testing.T) {
 			},
 			Execute: func(t *testing.T, data interface{}) error {
 				// 不需要使用files，直接测试超时逻辑
-				
+
 				fileManager := file.NewFileManager(tempDir)
 				pdfService := pdf.NewPDFService()
 				config := model.DefaultConfig()
@@ -444,25 +444,25 @@ func TestErrorScenarios_NetworkAndTimeout(t *testing.T) {
 
 				// 创建取消管理器
 				cancelManager := controller.NewCancellationManager(ctrl)
-				
+
 				// 创建一个模拟的长时间运行任务
 				_, cancel := context.WithCancel(context.Background())
 				jobID := "timeout_test_job"
-				
+
 				// 注册取消操作
 				cancelManager.RegisterCancellation(jobID, cancel)
-				
+
 				// 启动一个长时间运行的goroutine来模拟任务
 				go func() {
 					// 模拟长时间运行的任务
 					time.Sleep(100 * time.Millisecond)
 				}()
-				
+
 				// 立即测试超时取消（1纳秒超时）
 				return cancelManager.GracefulCancellation(jobID, 1*time.Nanosecond)
 			},
 			Verify: func(t *testing.T, err error) bool {
-				return err != nil && (strings.Contains(err.Error(), "超时") || 
+				return err != nil && (strings.Contains(err.Error(), "超时") ||
 					strings.Contains(err.Error(), "timeout"))
 			},
 		},

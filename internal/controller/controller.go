@@ -22,17 +22,17 @@ type CompletionCallback func(outputPath string)
 
 // Controller 定义应用程序的主控制器
 type Controller struct {
-	PDFService    pdf.PDFService
-	FileManager   file.FileManager
-	Config        *model.Config
-	
+	PDFService  pdf.PDFService
+	FileManager file.FileManager
+	Config      *model.Config
+
 	// 当前任务管理
 	currentJob          *model.MergeJob
 	jobMutex            sync.RWMutex
 	cancelFunc          context.CancelFunc
 	workflowManager     *WorkflowManager
 	cancellationManager *CancellationManager
-	
+
 	// 回调函数
 	progressCallback   ProgressCallback
 	errorCallback      ErrorCallback
@@ -50,13 +50,13 @@ func NewController(
 		FileManager: fileManager,
 		Config:      config,
 	}
-	
+
 	// 创建工作流程管理器
 	controller.workflowManager = NewWorkflowManager(controller)
-	
+
 	// 创建取消管理器
 	controller.cancellationManager = NewCancellationManager(controller)
-	
+
 	return controller
 }
 
@@ -81,7 +81,7 @@ func (c *Controller) ValidateFile(filePath string) error {
 	if err := c.FileManager.ValidateFile(filePath); err != nil {
 		return fmt.Errorf("文件访问失败: %v", err)
 	}
-	
+
 	// 然后验证PDF格式
 	return c.PDFService.ValidatePDF(filePath)
 }
@@ -89,14 +89,14 @@ func (c *Controller) ValidateFile(filePath string) error {
 // ValidateFiles 验证多个文件
 func (c *Controller) ValidateFiles(filePaths []string) map[string]error {
 	results := make(map[string]error)
-	
+
 	for _, filePath := range filePaths {
 		err := c.ValidateFile(filePath)
 		if err != nil {
 			results[filePath] = err
 		}
 	}
-	
+
 	return results
 }
 
@@ -126,29 +126,29 @@ func (c *Controller) StartMergeJob(mainFile string, additionalFiles []string, ou
 	if c.IsJobRunning() {
 		return fmt.Errorf("已有合并任务正在运行")
 	}
-	
+
 	// 创建新任务
 	job := model.NewMergeJob(mainFile, additionalFiles, outputPath)
-	
+
 	c.jobMutex.Lock()
 	c.currentJob = job
 	c.jobMutex.Unlock()
-	
+
 	// 创建可取消的上下文
 	ctx, cancel := context.WithCancel(context.Background())
 	c.cancelFunc = cancel
-	
+
 	// 注册取消操作
 	c.cancellationManager.RegisterCancellation(job.ID, cancel)
-	
+
 	// 添加清理任务
 	c.cancellationManager.AddCleanupTask(NewTempFileCleanupTask(c.FileManager))
 	c.cancellationManager.AddCleanupTask(NewMemoryCleanupTask())
 	c.cancellationManager.AddCleanupTask(NewJobStateCleanupTask(c))
-	
+
 	// 异步执行合并
 	go c.executeMergeJob(ctx, job)
-	
+
 	return nil
 }
 
@@ -157,11 +157,11 @@ func (c *Controller) CancelCurrentJob() error {
 	c.jobMutex.RLock()
 	currentJob := c.currentJob
 	c.jobMutex.RUnlock()
-	
+
 	if currentJob == nil {
 		return fmt.Errorf("没有正在运行的任务")
 	}
-	
+
 	// 使用取消管理器进行优雅取消
 	return c.cancellationManager.GracefulCancellation(currentJob.ID, 5*time.Second)
 }
@@ -177,14 +177,14 @@ func (c *Controller) executeMergeJob(ctx context.Context, job *model.MergeJob) {
 		c.cancelFunc = nil
 		c.jobMutex.Unlock()
 	}()
-	
+
 	// 标记任务开始
 	c.jobMutex.Lock()
 	job.SetRunning()
 	c.jobMutex.Unlock()
-	
+
 	c.notifyProgress(0.0, "开始合并", "正在启动合并工作流程...")
-	
+
 	// 使用工作流程管理器执行完整的合并流程
 	if err := c.workflowManager.ExecuteWorkflow(ctx, job); err != nil {
 		c.jobMutex.Lock()
@@ -193,17 +193,17 @@ func (c *Controller) executeMergeJob(ctx context.Context, job *model.MergeJob) {
 		c.notifyError(err)
 		return
 	}
-	
+
 	// 检查取消
 	if ctx.Err() != nil {
 		return
 	}
-	
+
 	// 标记任务完成
 	c.jobMutex.Lock()
 	job.SetCompleted()
 	c.jobMutex.Unlock()
-	
+
 	c.notifyCompletion(job.OutputPath)
 }
 
@@ -211,26 +211,26 @@ func (c *Controller) executeMergeJob(ctx context.Context, job *model.MergeJob) {
 func (c *Controller) validateJobFiles(ctx context.Context, job *model.MergeJob) error {
 	allFiles := append([]string{job.MainFile}, job.AdditionalFiles...)
 	totalFiles := len(allFiles)
-	
+
 	for i, filePath := range allFiles {
 		// 检查取消
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		
+
 		// 更新进度
 		progress := 0.2 * float64(i) / float64(totalFiles)
 		c.notifyProgress(progress, "验证文件", fmt.Sprintf("正在验证: %s", filePath))
-		
+
 		// 验证文件
 		if err := c.ValidateFile(filePath); err != nil {
 			return fmt.Errorf("文件验证失败 %s: %v", filePath, err)
 		}
-		
+
 		// 减少模拟验证时间
 		time.Sleep(10 * time.Millisecond)
 	}
-	
+
 	return nil
 }
 
@@ -238,17 +238,17 @@ func (c *Controller) validateJobFiles(ctx context.Context, job *model.MergeJob) 
 func (c *Controller) performMerge(ctx context.Context, job *model.MergeJob) error {
 	// 创建进度写入器
 	progressWriter := &progressWriter{
-		controller: c,
+		controller:   c,
 		baseProgress: 0.3,
-		maxProgress: 0.9,
+		maxProgress:  0.9,
 	}
-	
+
 	// 执行合并
 	err := c.PDFService.MergePDFs(job.MainFile, job.AdditionalFiles, job.OutputPath, progressWriter)
 	if err != nil {
 		return fmt.Errorf("合并失败: %v", err)
 	}
-	
+
 	return nil
 }
 
@@ -257,7 +257,7 @@ func (c *Controller) notifyProgress(progress float64, status, detail string) {
 	if c.progressCallback != nil {
 		c.progressCallback(progress, status, detail)
 	}
-	
+
 	// 更新任务进度
 	c.jobMutex.Lock()
 	if c.currentJob != nil {
@@ -286,10 +286,10 @@ func (c *Controller) MergePDFs(mainFile string, additionalFiles []string, output
 	if err := c.ValidateFile(mainFile); err != nil {
 		return fmt.Errorf("主文件验证失败: %v", err)
 	}
-	
+
 	// 验证附加文件
 	validationResults := c.ValidateFiles(additionalFiles)
-	
+
 	// 收集有效的文件
 	validFiles := []string{mainFile}
 	for _, filePath := range additionalFiles {
@@ -297,11 +297,11 @@ func (c *Controller) MergePDFs(mainFile string, additionalFiles []string, output
 			validFiles = append(validFiles, filePath)
 		}
 	}
-	
+
 	if len(validFiles) < 2 {
 		return fmt.Errorf("至少需要两个有效的PDF文件进行合并")
 	}
-	
+
 	// 执行合并
 	return c.PDFService.MergePDFs(validFiles[0], validFiles[1:], outputPath, nil)
 }

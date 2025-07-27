@@ -4,11 +4,21 @@
 
 ### 🚀 快速下载
 
+#### GUI版本 (图形界面)
 | 平台 | 文件 | 大小 | 状态 |
 |------|------|------|------|
 | **macOS (Intel)** | [pdf-merger-macos-intel](releases/v1.0.0/pdf-merger-macos-intel) | 19MB | ✅ 可用 |
-| **Windows 64位** | pdf-merger-windows-64bit.exe | - | 🔄 即将发布 |
-| **Linux 64位** | pdf-merger-linux-64bit | - | 🔄 即将发布 |
+| **macOS (Apple Silicon)** | [pdf-merger-macos-apple-silicon](releases/v1.0.0/pdf-merger-macos-apple-silicon) | 19MB | ✅ 可用 |
+
+#### CLI版本 (命令行界面)
+| 平台 | 文件 | 大小 | 状态 |
+|------|------|------|------|
+| **Windows 64位** | [pdf-merger-cli-windows-64bit.exe](releases/v1.0.0/pdf-merger-cli-windows-64bit.exe) | 2MB | ✅ 可用 |
+| **Windows 32位** | [pdf-merger-cli-windows-32bit.exe](releases/v1.0.0/pdf-merger-cli-windows-32bit.exe) | 1MB | ✅ 可用 |
+| **Linux 64位** | [pdf-merger-cli-linux-64bit](releases/v1.0.0/pdf-merger-cli-linux-64bit) | 2MB | ✅ 可用 |
+| **Linux ARM64** | [pdf-merger-cli-linux-arm64](releases/v1.0.0/pdf-merger-cli-linux-arm64) | 2MB | ✅ 可用 |
+| **macOS (Intel)** | [pdf-merger-cli-macos-intel](releases/v1.0.0/pdf-merger-cli-macos-intel) | 2MB | ✅ 可用 |
+| **macOS (Apple Silicon)** | [pdf-merger-cli-macos-apple-silicon](releases/v1.0.0/pdf-merger-cli-macos-apple-silicon) | 2MB | ✅ 可用 |
 
 ### 📋 文件校验
 
@@ -24,16 +34,21 @@ Get-FileHash pdf-merger-*.exe -Algorithm SHA256
 
 ## 🚀 安装和使用
 
-### macOS
+### GUI版本 (图形界面)
+
+#### macOS
 ```bash
-# 1. 下载文件
+# 1. 下载文件 (Intel Mac)
 curl -L -o pdf-merger-macos-intel https://github.com/YOUR_USERNAME/pdf-merger/raw/main/releases/v1.0.0/pdf-merger-macos-intel
 
+# 或下载 Apple Silicon 版本
+curl -L -o pdf-merger-macos-apple-silicon https://github.com/YOUR_USERNAME/pdf-merger/raw/main/releases/v1.0.0/pdf-merger-macos-apple-silicon
+
 # 2. 添加执行权限
-chmod +x pdf-merger-macos-intel
+chmod +x pdf-merger-macos-*
 
 # 3. 运行应用程序
-./pdf-merger-macos-intel
+./pdf-merger-macos-*
 ```
 
 **注意：** 首次运行时，macOS可能会显示安全警告。请按以下步骤操作：
@@ -41,22 +56,40 @@ chmod +x pdf-merger-macos-intel
 2. 在弹出的对话框中点击"打开"
 3. 或者在"系统偏好设置" > "安全性与隐私"中允许运行
 
-### Windows
+### CLI版本 (命令行界面)
+
+#### Windows
 ```cmd
-# 1. 下载 pdf-merger-windows-64bit.exe
-# 2. 双击运行
+# 1. 下载文件
+# Windows 64位: pdf-merger-cli-windows-64bit.exe
+# Windows 32位: pdf-merger-cli-windows-32bit.exe
+
+# 2. 使用命令行运行
+pdf-merger-cli-windows-64bit.exe -input file1.pdf,file2.pdf -output merged.pdf
 ```
 
-### Linux
+#### Linux
 ```bash
 # 1. 下载文件
-wget https://github.com/YOUR_USERNAME/pdf-merger/raw/main/releases/v1.0.0/pdf-merger-linux-64bit
+wget https://github.com/YOUR_USERNAME/pdf-merger/raw/main/releases/v1.0.0/pdf-merger-cli-linux-64bit
 
 # 2. 添加执行权限
-chmod +x pdf-merger-linux-64bit
+chmod +x pdf-merger-cli-linux-64bit
 
-# 3. 运行应用程序
-./pdf-merger-linux-64bit
+# 3. 使用命令行运行
+./pdf-merger-cli-linux-64bit -input file1.pdf,file2.pdf -output merged.pdf
+```
+
+#### macOS (命令行版本)
+```bash
+# 1. 下载文件
+curl -L -o pdf-merger-cli-macos-intel https://github.com/YOUR_USERNAME/pdf-merger/raw/main/releases/v1.0.0/pdf-merger-cli-macos-intel
+
+# 2. 添加执行权限
+chmod +x pdf-merger-cli-macos-intel
+
+# 3. 使用命令行运行
+./pdf-merger-cli-macos-intel -input file1.pdf,file2.pdf -output merged.pdf
 ```
 
 ## 🔧 系统要求

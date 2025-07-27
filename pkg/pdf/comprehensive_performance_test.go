@@ -15,11 +15,11 @@ import (
 
 // PerformanceTestSuite 性能测试套件
 type PerformanceTestSuite struct {
-	TestDir    string
-	Results    []PerformanceTestResult
-	Mutex      sync.RWMutex
-	StartTime  time.Time
-	EndTime    time.Time
+	TestDir   string
+	Results   []PerformanceTestResult
+	Mutex     sync.RWMutex
+	StartTime time.Time
+	EndTime   time.Time
 }
 
 // PerformanceTestResult 性能测试结果
@@ -55,22 +55,22 @@ func (pts *PerformanceTestSuite) RunComprehensivePerformanceTests(t *testing.T) 
 
 	// 1. 基础性能测试
 	t.Run("BasicPerformance", pts.testBasicPerformance)
-	
+
 	// 2. 大规模文件测试
 	t.Run("LargeScaleFiles", pts.testLargeScaleFiles)
-	
+
 	// 3. 内存压力测试
 	t.Run("MemoryStress", pts.testMemoryStress)
-	
+
 	// 4. 并发性能测试
 	t.Run("ConcurrencyPerformance", pts.testConcurrencyPerformance)
-	
+
 	// 5. 文件类型多样性测试
 	t.Run("FileTypeDiversity", pts.testFileTypeDiversity)
-	
+
 	// 6. 边界条件测试
 	t.Run("BoundaryConditions", pts.testBoundaryConditions)
-	
+
 	// 7. 性能对比测试
 	t.Run("PerformanceComparison", pts.testPerformanceComparison)
 }
@@ -78,10 +78,10 @@ func (pts *PerformanceTestSuite) RunComprehensivePerformanceTests(t *testing.T) 
 // testBasicPerformance 基础性能测试
 func (pts *PerformanceTestSuite) testBasicPerformance(t *testing.T) {
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"SmallFiles", 5, 10, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 2; return c }()},
 		{"MediumFiles", 10, 25, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 4; return c }()},
@@ -99,10 +99,10 @@ func (pts *PerformanceTestSuite) testBasicPerformance(t *testing.T) {
 // testLargeScaleFiles 大规模文件测试
 func (pts *PerformanceTestSuite) testLargeScaleFiles(t *testing.T) {
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"MassiveFiles", 50, 100, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 16; return c }()},
 		{"HugeFiles", 100, 200, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 32; return c }()},
@@ -120,10 +120,10 @@ func (pts *PerformanceTestSuite) testLargeScaleFiles(t *testing.T) {
 // testMemoryStress 内存压力测试
 func (pts *PerformanceTestSuite) testMemoryStress(t *testing.T) {
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"LowMemory", 10, 20, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 1; return c }()},
 		{"VeryLowMemory", 5, 15, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 1; return c }()},
@@ -141,10 +141,10 @@ func (pts *PerformanceTestSuite) testMemoryStress(t *testing.T) {
 // testConcurrencyPerformance 并发性能测试
 func (pts *PerformanceTestSuite) testConcurrencyPerformance(t *testing.T) {
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"HighConcurrency", 30, 30, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 16; return c }()},
 		{"VeryHighConcurrency", 50, 20, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 32; return c }()},
@@ -163,10 +163,10 @@ func (pts *PerformanceTestSuite) testConcurrencyPerformance(t *testing.T) {
 func (pts *PerformanceTestSuite) testFileTypeDiversity(t *testing.T) {
 	// 测试不同页面大小的文件混合
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"MixedSizes", 15, 0, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 8; return c }()}, // 0表示混合大小
 		{"VariableSizes", 25, 0, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 12; return c }()},
@@ -183,10 +183,10 @@ func (pts *PerformanceTestSuite) testFileTypeDiversity(t *testing.T) {
 // testBoundaryConditions 边界条件测试
 func (pts *PerformanceTestSuite) testBoundaryConditions(t *testing.T) {
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		config     *StreamingConfig
+		config       *StreamingConfig
 	}{
 		{"SingleFile", 1, 100, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 1; return c }()},
 		{"TwoFiles", 2, 50, func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 1; return c }()},
@@ -205,10 +205,10 @@ func (pts *PerformanceTestSuite) testBoundaryConditions(t *testing.T) {
 func (pts *PerformanceTestSuite) testPerformanceComparison(t *testing.T) {
 	// 对比不同配置下的性能
 	testCases := []struct {
-		name      string
-		fileCount int
+		name         string
+		fileCount    int
 		pagesPerFile int
-		configs   []*StreamingConfig
+		configs      []*StreamingConfig
 	}{
 		{"ConfigComparison", 20, 30, []*StreamingConfig{
 			func() *StreamingConfig { c := DefaultStreamingConfig(); c.MaxConcurrentChunks = 4; return c }(),
@@ -220,8 +220,8 @@ func (pts *PerformanceTestSuite) testPerformanceComparison(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			for i, config := range tc.configs {
-				result := pts.runSinglePerformanceTest(t, 
-					fmt.Sprintf("%s_Config%d", tc.name, i+1), 
+				result := pts.runSinglePerformanceTest(t,
+					fmt.Sprintf("%s_Config%d", tc.name, i+1),
 					tc.fileCount, tc.pagesPerFile, config)
 				pts.addResult(result)
 			}
@@ -267,7 +267,7 @@ func (pts *PerformanceTestSuite) runSinglePerformanceTest(t *testing.T, testName
 	}
 	merger := NewStreamingMerger(options)
 	outputPath := filepath.Join(pts.TestDir, fmt.Sprintf("output_%s.pdf", testName))
-	
+
 	ctx := context.Background()
 	_, mergeErr := merger.MergeStreaming(ctx, testFiles, outputPath, nil)
 
@@ -327,7 +327,7 @@ func (pts *PerformanceTestSuite) runMixedSizeTest(t *testing.T, testName string,
 	}
 	merger := NewStreamingMerger(options)
 	outputPath := filepath.Join(pts.TestDir, fmt.Sprintf("output_%s.pdf", testName))
-	
+
 	ctx := context.Background()
 	_, mergeErr := merger.MergeStreaming(ctx, testFiles, outputPath, nil)
 
@@ -356,7 +356,7 @@ func (pts *PerformanceTestSuite) createTestFiles(t *testing.T, fileCount, pagesP
 	for i := 0; i < fileCount; i++ {
 		fileName := fmt.Sprintf("test_%d.pdf", i)
 		filePath := filepath.Join(pts.TestDir, fileName)
-		
+
 		// 创建测试PDF内容
 		content := createPerformanceTestPDFContent(pagesPerFile)
 		err := ioutil.WriteFile(filePath, content, 0644)
@@ -366,7 +366,7 @@ func (pts *PerformanceTestSuite) createTestFiles(t *testing.T, fileCount, pagesP
 
 		testFiles = append(testFiles, filePath)
 		totalPages += pagesPerFile
-		
+
 		// 获取文件大小
 		if info, err := os.Stat(filePath); err == nil {
 			totalSize += info.Size()
@@ -385,7 +385,7 @@ func (pts *PerformanceTestSuite) createMixedSizeTestFiles(t *testing.T, fileCoun
 	for i := 0; i < fileCount; i++ {
 		fileName := fmt.Sprintf("mixed_test_%d.pdf", i)
 		filePath := filepath.Join(pts.TestDir, fileName)
-		
+
 		// 根据索引创建不同大小的文件
 		pagesPerFile := 5 + (i % 20) // 5-24页
 		content := createPerformanceTestPDFContent(pagesPerFile)
@@ -396,7 +396,7 @@ func (pts *PerformanceTestSuite) createMixedSizeTestFiles(t *testing.T, fileCoun
 
 		testFiles = append(testFiles, filePath)
 		totalPages += pagesPerFile
-		
+
 		if info, err := os.Stat(filePath); err == nil {
 			totalSize += info.Size()
 		}
@@ -467,7 +467,7 @@ func (pts *PerformanceTestSuite) GenerateReport(t *testing.T) {
 		success := 0
 		var avgDuration time.Duration
 		var avgMemory uint64
-		
+
 		for _, result := range results {
 			if result.Success {
 				success++
@@ -475,7 +475,7 @@ func (pts *PerformanceTestSuite) GenerateReport(t *testing.T) {
 				avgMemory += result.PeakMemory
 			}
 		}
-		
+
 		if success > 0 {
 			t.Logf("成功率: %.2f%% (%d/%d)", float64(success)/float64(len(results))*100, success, len(results))
 			t.Logf("平均处理时间: %v", avgDuration/time.Duration(success))
@@ -540,7 +540,7 @@ trailer
 startxref
 %d
 %%EOF`, strings.Repeat("3 0 R ", pages), pages, 300+pages*50)
-	
+
 	return []byte(content)
 }
 
@@ -555,7 +555,7 @@ func TestComprehensivePerformance(t *testing.T) {
 
 	// 创建性能测试套件
 	suite := NewPerformanceTestSuite(testDir)
-	
+
 	// 执行全面性能测试
 	suite.RunComprehensivePerformanceTests(t)
 }
@@ -588,24 +588,24 @@ func BenchmarkStreamingMerger(b *testing.B) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
-			options := &MergeOptions{
-		MaxMemoryUsage:    100 * 1024 * 1024, // 100MB
-		TempDirectory:     testDir,
-		EnableGC:          true,
-		ChunkSize:         10,
-		UseStreaming:      true,
-		OptimizeMemory:    true,
-		ConcurrentWorkers: config.MaxConcurrentChunks,
-	}
-	merger := NewStreamingMerger(options)
-	outputPath := filepath.Join(testDir, fmt.Sprintf("bench_output_%d.pdf", i))
-	
-	ctx := context.Background()
-	_, err := merger.MergeStreaming(ctx, testFiles, outputPath, nil)
+		options := &MergeOptions{
+			MaxMemoryUsage:    100 * 1024 * 1024, // 100MB
+			TempDirectory:     testDir,
+			EnableGC:          true,
+			ChunkSize:         10,
+			UseStreaming:      true,
+			OptimizeMemory:    true,
+			ConcurrentWorkers: config.MaxConcurrentChunks,
+		}
+		merger := NewStreamingMerger(options)
+		outputPath := filepath.Join(testDir, fmt.Sprintf("bench_output_%d.pdf", i))
+
+		ctx := context.Background()
+		_, err := merger.MergeStreaming(ctx, testFiles, outputPath, nil)
 		if err != nil {
 			b.Fatalf("合并失败: %v", err)
 		}
-		
+
 		os.Remove(outputPath)
 	}
 }
@@ -639,7 +639,7 @@ func BenchmarkMemoryUsage(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var m1, m2 runtime.MemStats
 		runtime.ReadMemStats(&m1)
-		
+
 		options := &MergeOptions{
 			MaxMemoryUsage:    50 * 1024 * 1024, // 50MB
 			TempDirectory:     testDir,
@@ -651,16 +651,16 @@ func BenchmarkMemoryUsage(b *testing.B) {
 		}
 		merger := NewStreamingMerger(options)
 		outputPath := filepath.Join(testDir, fmt.Sprintf("memory_output_%d.pdf", i))
-		
+
 		ctx := context.Background()
 		_, err := merger.MergeStreaming(ctx, testFiles, outputPath, nil)
 		if err != nil {
 			b.Fatalf("合并失败: %v", err)
 		}
-		
+
 		runtime.ReadMemStats(&m2)
 		b.ReportMetric(float64(m2.Alloc-m1.Alloc)/1024/1024, "MB")
-		
+
 		os.Remove(outputPath)
 	}
-} 
+}

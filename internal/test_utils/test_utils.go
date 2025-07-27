@@ -19,12 +19,12 @@ func CreateTempDir(t TestingInterface, prefix string) string {
 	if err != nil {
 		t.Fatalf("无法创建临时目录: %v", err)
 	}
-	
+
 	// 注册清理函数
 	t.Cleanup(func() {
 		os.RemoveAll(tempDir)
 	})
-	
+
 	return tempDir
 }
 
@@ -79,7 +79,7 @@ trailer
 startxref
 173
 %%EOF`)
-	
+
 	return CreateTestFile(t, dir, filename, pdfContent)
 }
 
@@ -104,22 +104,22 @@ func CompareFiles(t TestingInterface, file1, file2 string) bool {
 	if err != nil {
 		t.Fatalf("无法读取文件 %s: %v", file1, err)
 	}
-	
+
 	content2, err := os.ReadFile(file2)
 	if err != nil {
 		t.Fatalf("无法读取文件 %s: %v", file2, err)
 	}
-	
+
 	if len(content1) != len(content2) {
 		return false
 	}
-	
+
 	for i := range content1 {
 		if content1[i] != content2[i] {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -178,7 +178,7 @@ trailer
 startxref
 297
 %%EOF`)
-	
+
 	return CreateTestFile(t, dir, filename, encryptedContent)
 }
 
@@ -222,7 +222,7 @@ trailer
 startxref
 CORRUPTED
 %%EOF`)
-	
+
 	return CreateTestFile(t, dir, filename, corruptedContent)
 }
 
@@ -278,8 +278,6 @@ func CreateLargePDFFile(t TestingInterface, dir, filename string, sizeKB int) st
 
 	return CreateTestFile(t, dir, filename, []byte(content.String()))
 }
-
-
 
 // MockErrorCallback 模拟错误回调
 type MockErrorCallback struct {

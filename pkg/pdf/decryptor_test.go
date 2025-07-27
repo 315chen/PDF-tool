@@ -67,7 +67,7 @@ func TestPDFDecryptor_TryDecryptPDF(t *testing.T) {
 
 	// 尝试解密未加密的文件
 	decryptedPath, password, err := decryptor.TryDecryptPDF(file, []string{"password1", "password2"})
-	
+
 	// 对于简单的测试文件，可能无法正确解析，这是预期的
 	if err != nil {
 		t.Logf("解密文件时出现错误: %v", err)
@@ -108,7 +108,7 @@ func TestPDFDecryptor_generateTempFilePath(t *testing.T) {
 
 func TestPDFDecryptor_AutoDecrypt(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建解密器
 	decryptor := NewPDFDecryptor(&DecryptorOptions{
 		TempDirectory: tempDir,
@@ -136,13 +136,13 @@ func TestPDFDecryptor_AutoDecrypt(t *testing.T) {
 	}
 
 	t.Logf("解密结果: 成功=%t, 路径=%s, 密码=%s, 尝试次数=%d, 用时=%v, 原始文件=%t",
-		result.Success, result.DecryptedPath, result.UsedPassword, 
+		result.Success, result.DecryptedPath, result.UsedPassword,
 		result.AttemptCount, result.ProcessingTime, result.IsOriginalFile)
 }
 
 func TestPDFDecryptor_ProgressCallback(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 记录进度回调
 	var progressCalls []string
 	progressCallback := func(current, total int, password string) {
@@ -185,7 +185,7 @@ func TestPDFDecryptor_ProgressCallback(t *testing.T) {
 
 func TestPDFDecryptor_TempFileManagement(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建解密器
 	decryptor := NewPDFDecryptor(&DecryptorOptions{
 		TempDirectory: tempDir,
@@ -200,11 +200,11 @@ func TestPDFDecryptor_TempFileManagement(t *testing.T) {
 	// 模拟添加临时文件
 	tempFile1 := filepath.Join(tempDir, "temp1.pdf")
 	tempFile2 := filepath.Join(tempDir, "temp2.pdf")
-	
+
 	// 创建临时文件
 	os.WriteFile(tempFile1, []byte("test1"), 0644)
 	os.WriteFile(tempFile2, []byte("test2"), 0644)
-	
+
 	decryptor.addTempFile(tempFile1)
 	decryptor.addTempFile(tempFile2)
 	decryptor.addTempFile(tempFile1) // 重复添加应该被忽略
@@ -314,7 +314,7 @@ func TestPDFDecryptor_Settings(t *testing.T) {
 func TestPDFDecryptor_DefaultPasswords(t *testing.T) {
 	// 测试默认密码列表
 	defaultPasswords := getDefaultCommonPasswords()
-	
+
 	if len(defaultPasswords) == 0 {
 		t.Error("默认密码列表不应该为空")
 	}
@@ -339,7 +339,7 @@ func TestPDFDecryptor_DefaultPasswords(t *testing.T) {
 
 func TestPDFDecryptor_DecryptWithProgress(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// 创建解密器
 	decryptor := NewPDFDecryptor(&DecryptorOptions{
 		TempDirectory: tempDir,

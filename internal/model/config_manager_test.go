@@ -106,12 +106,12 @@ func TestConfigManager_SaveAndLoadConfig(t *testing.T) {
 
 func TestConfigManager_AddCommonPassword(t *testing.T) {
 	cm := NewConfigManager("/tmp/test-config.json")
-	
+
 	initialCount := len(cm.GetConfig().CommonPasswords)
-	
+
 	// 添加新密码
 	cm.AddCommonPassword("newpassword")
-	
+
 	config := cm.GetConfig()
 	if len(config.CommonPasswords) != initialCount+1 {
 		t.Errorf("Expected %d passwords, got %d", initialCount+1, len(config.CommonPasswords))
@@ -119,7 +119,7 @@ func TestConfigManager_AddCommonPassword(t *testing.T) {
 
 	// 尝试添加重复密码
 	cm.AddCommonPassword("newpassword")
-	
+
 	config = cm.GetConfig()
 	if len(config.CommonPasswords) != initialCount+1 {
 		t.Errorf("Expected password count to remain %d after adding duplicate, got %d", initialCount+1, len(config.CommonPasswords))
@@ -128,14 +128,14 @@ func TestConfigManager_AddCommonPassword(t *testing.T) {
 
 func TestConfigManager_RemoveCommonPassword(t *testing.T) {
 	cm := NewConfigManager("/tmp/test-config.json")
-	
+
 	// 添加一个密码
 	cm.AddCommonPassword("toremove")
 	initialCount := len(cm.GetConfig().CommonPasswords)
-	
+
 	// 移除密码
 	cm.RemoveCommonPassword("toremove")
-	
+
 	config := cm.GetConfig()
 	if len(config.CommonPasswords) != initialCount-1 {
 		t.Errorf("Expected %d passwords after removal, got %d", initialCount-1, len(config.CommonPasswords))
@@ -150,7 +150,7 @@ func TestConfigManager_RemoveCommonPassword(t *testing.T) {
 
 	// 尝试移除不存在的密码
 	cm.RemoveCommonPassword("nonexistent")
-	
+
 	config = cm.GetConfig()
 	if len(config.CommonPasswords) != initialCount-1 {
 		t.Errorf("Expected password count to remain %d after removing nonexistent, got %d", initialCount-1, len(config.CommonPasswords))
@@ -159,7 +159,7 @@ func TestConfigManager_RemoveCommonPassword(t *testing.T) {
 
 func TestConfigManager_UpdateConfig(t *testing.T) {
 	cm := NewConfigManager("/tmp/test-config.json")
-	
+
 	newConfig := &Config{
 		MaxMemoryUsage:    500 * 1024 * 1024,
 		EnableAutoDecrypt: false,
@@ -169,7 +169,7 @@ func TestConfigManager_UpdateConfig(t *testing.T) {
 	}
 
 	cm.UpdateConfig(newConfig)
-	
+
 	config := cm.GetConfig()
 	if config != newConfig {
 		t.Error("Expected UpdateConfig to set the new config")

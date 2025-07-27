@@ -175,17 +175,17 @@ func TestResourceManager_PriorityOrder(t *testing.T) {
 
 	// 创建有优先级的自定义资源
 	executionOrder := make([]int, 0)
-	
+
 	rm.AddCustom(func() error {
 		executionOrder = append(executionOrder, 1)
 		return nil
 	}, 1) // 低优先级
-	
+
 	rm.AddCustom(func() error {
 		executionOrder = append(executionOrder, 3)
 		return nil
 	}, 3) // 高优先级
-	
+
 	rm.AddCustom(func() error {
 		executionOrder = append(executionOrder, 2)
 		return nil

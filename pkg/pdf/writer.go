@@ -13,36 +13,36 @@ import (
 
 // PDFWriter 提供增强的PDF写入功能，使用pdfcpu
 type PDFWriter struct {
-	outputPath    string
-	tempPath      string
-	isOpen        bool
-	mutex         sync.Mutex
-	retryCount    int
-	maxRetries    int
-	retryDelay    time.Duration
+	outputPath        string
+	tempPath          string
+	isOpen            bool
+	mutex             sync.Mutex
+	retryCount        int
+	maxRetries        int
+	retryDelay        time.Duration
 	initialRetryDelay time.Duration
-	maxRetryDelay time.Duration
-	backoffFactor float64
-	backupEnabled bool
-	adapter       *PDFCPUAdapter
-	config        *PDFCPUConfig
-	content       []byte // 存储要写入的内容
+	maxRetryDelay     time.Duration
+	backoffFactor     float64
+	backupEnabled     bool
+	adapter           *PDFCPUAdapter
+	config            *PDFCPUConfig
+	content           []byte // 存储要写入的内容
 }
 
 // WriterOptions PDF写入器选项
 type WriterOptions struct {
-	MaxRetries       int           // 最大重试次数
-	RetryDelay       time.Duration // 重试延迟（兼容旧用法）
+	MaxRetries        int           // 最大重试次数
+	RetryDelay        time.Duration // 重试延迟（兼容旧用法）
 	InitialRetryDelay time.Duration // 初始重试延迟
-	MaxRetryDelay    time.Duration // 最大重试延迟
-	BackoffFactor    float64       // 指数退避因子
-	BackupEnabled    bool          // 是否启用备份
-	TempDirectory    string        // 临时文件目录
-	ValidationMode   string        // pdfcpu验证模式
-	WriteObjectStream bool         // 是否写入对象流
-	WriteXRefStream  bool          // 是否写入交叉引用流
-	EncryptUsingAES  bool          // 是否使用AES加密
-	EncryptKeyLength int           // 加密密钥长度
+	MaxRetryDelay     time.Duration // 最大重试延迟
+	BackoffFactor     float64       // 指数退避因子
+	BackupEnabled     bool          // 是否启用备份
+	TempDirectory     string        // 临时文件目录
+	ValidationMode    string        // pdfcpu验证模式
+	WriteObjectStream bool          // 是否写入对象流
+	WriteXRefStream   bool          // 是否写入交叉引用流
+	EncryptUsingAES   bool          // 是否使用AES加密
+	EncryptKeyLength  int           // 加密密钥长度
 }
 
 // WriteResult 写入结果
@@ -61,15 +61,15 @@ type WriteResult struct {
 func NewPDFWriter(outputPath string, options *WriterOptions) (*PDFWriter, error) {
 	if options == nil {
 		options = &WriterOptions{
-			MaxRetries:       3,
-			RetryDelay:       time.Second * 2,
-			BackupEnabled:    true,
-			TempDirectory:    os.TempDir(),
-			ValidationMode:   "relaxed",
+			MaxRetries:        3,
+			RetryDelay:        time.Second * 2,
+			BackupEnabled:     true,
+			TempDirectory:     os.TempDir(),
+			ValidationMode:    "relaxed",
 			WriteObjectStream: true,
-			WriteXRefStream:  true,
-			EncryptUsingAES:  true,
-			EncryptKeyLength: 256,
+			WriteXRefStream:   true,
+			EncryptUsingAES:   true,
+			EncryptKeyLength:  256,
 		}
 	}
 
@@ -103,18 +103,18 @@ func NewPDFWriter(outputPath string, options *WriterOptions) (*PDFWriter, error)
 	}
 
 	writer := &PDFWriter{
-		outputPath:    outputPath,
-		tempPath:      tempPath,
-		isOpen:        false,
-		maxRetries:    options.MaxRetries,
-		retryDelay:    options.RetryDelay,
+		outputPath:        outputPath,
+		tempPath:          tempPath,
+		isOpen:            false,
+		maxRetries:        options.MaxRetries,
+		retryDelay:        options.RetryDelay,
 		initialRetryDelay: options.InitialRetryDelay,
-		maxRetryDelay: options.MaxRetryDelay,
-		backoffFactor: options.BackoffFactor,
-		backupEnabled: options.BackupEnabled,
-		adapter:       adapter,
-		config:        config,
-		content:       make([]byte, 0),
+		maxRetryDelay:     options.MaxRetryDelay,
+		backoffFactor:     options.BackoffFactor,
+		backupEnabled:     options.BackupEnabled,
+		adapter:           adapter,
+		config:            config,
+		content:           make([]byte, 0),
 	}
 
 	return writer, nil
@@ -444,7 +444,7 @@ trailer
 startxref
 400
 %%EOF`
-		
+
 		if _, err := file.Write([]byte(basicPDF)); err != nil {
 			return &PDFError{
 				Type:    ErrorIO,
@@ -690,7 +690,7 @@ func generateTempPath(outputPath, tempDir string) string {
 	baseName := filepath.Base(outputPath)
 	ext := filepath.Ext(baseName)
 	name := strings.TrimSuffix(baseName, ext)
-	
-	return filepath.Join(tempDir, fmt.Sprintf("%s_temp_%d%s", 
+
+	return filepath.Join(tempDir, fmt.Sprintf("%s_temp_%d%s",
 		name, time.Now().UnixNano(), ext))
 }

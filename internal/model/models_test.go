@@ -59,7 +59,7 @@ func TestNewMergeJob(t *testing.T) {
 
 func TestMergeJob_SetCompleted(t *testing.T) {
 	job := NewMergeJob("main.pdf", []string{"file1.pdf"}, "output.pdf")
-	
+
 	job.SetCompleted()
 
 	if job.Status != JobCompleted {
@@ -78,7 +78,7 @@ func TestMergeJob_SetCompleted(t *testing.T) {
 func TestMergeJob_SetFailed(t *testing.T) {
 	job := NewMergeJob("main.pdf", []string{"file1.pdf"}, "output.pdf")
 	testError := fmt.Errorf("Test error")
-	
+
 	job.SetFailed(testError)
 
 	if job.Status != JobFailed {
@@ -118,7 +118,7 @@ func TestMergeJob_UpdateProgress(t *testing.T) {
 
 func TestMergeJob_GetTotalFiles(t *testing.T) {
 	job := NewMergeJob("main.pdf", []string{"file1.pdf", "file2.pdf", "file3.pdf"}, "output.pdf")
-	
+
 	expected := 4 // 1 main + 3 additional
 	if total := job.GetTotalFiles(); total != expected {
 		t.Errorf("Expected total files %d, got %d", expected, total)

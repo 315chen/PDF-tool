@@ -31,23 +31,23 @@ type StreamingMerger struct {
 // StreamingConfig 流式合并配置
 type StreamingConfig struct {
 	// 内存管理
-	MemoryWarningThreshold  float64 // 内存警告阈值（百分比）
-	MemoryCriticalThreshold float64 // 内存严重阈值（百分比）
+	MemoryWarningThreshold  float64       // 内存警告阈值（百分比）
+	MemoryCriticalThreshold float64       // 内存严重阈值（百分比）
 	GCInterval              time.Duration // GC间隔
-	
+
 	// 分块处理
-	MinChunkSize            int   // 最小分块大小
-	MaxChunkSize            int   // 最大分块大小
-	LargeFileThreshold      int64 // 大文件阈值（字节）
-	
+	MinChunkSize       int   // 最小分块大小
+	MaxChunkSize       int   // 最大分块大小
+	LargeFileThreshold int64 // 大文件阈值（字节）
+
 	// 并发控制
-	MaxConcurrentChunks     int           // 最大并发分块数
-	ChunkProcessTimeout     time.Duration // 分块处理超时
-	
+	MaxConcurrentChunks int           // 最大并发分块数
+	ChunkProcessTimeout time.Duration // 分块处理超时
+
 	// 优化选项
-	EnableAdaptiveChunking  bool // 启用自适应分块
-	EnableMemoryPrediction  bool // 启用内存预测
-	EnableProgressiveGC     bool // 启用渐进式GC
+	EnableAdaptiveChunking bool // 启用自适应分块
+	EnableMemoryPrediction bool // 启用内存预测
+	EnableProgressiveGC    bool // 启用渐进式GC
 }
 
 // DefaultStreamingConfig 默认流式合并配置
@@ -56,17 +56,17 @@ func DefaultStreamingConfig() *StreamingConfig {
 		MemoryWarningThreshold:  0.70, // 70%
 		MemoryCriticalThreshold: 0.85, // 85%
 		GCInterval:              100 * time.Millisecond,
-		
-		MinChunkSize:            2,
-		MaxChunkSize:            20,
-		LargeFileThreshold:      10 * 1024 * 1024, // 10MB
-		
-		MaxConcurrentChunks:     runtime.NumCPU(),
-		ChunkProcessTimeout:     30 * time.Second,
-		
-		EnableAdaptiveChunking:  true,
-		EnableMemoryPrediction:  true,
-		EnableProgressiveGC:     true,
+
+		MinChunkSize:       2,
+		MaxChunkSize:       20,
+		LargeFileThreshold: 10 * 1024 * 1024, // 10MB
+
+		MaxConcurrentChunks: runtime.NumCPU(),
+		ChunkProcessTimeout: 30 * time.Second,
+
+		EnableAdaptiveChunking: true,
+		EnableMemoryPrediction: true,
+		EnableProgressiveGC:    true,
 	}
 }
 
@@ -83,12 +83,12 @@ type MergeOptions struct {
 
 // MergeResult 合并结果
 type MergeResult struct {
-	OutputPath      string
-	TotalPages      int
-	ProcessedFiles  int
-	SkippedFiles    []string
-	ProcessingTime  time.Duration
-	MemoryUsage     int64
+	OutputPath     string
+	TotalPages     int
+	ProcessedFiles int
+	SkippedFiles   []string
+	ProcessingTime time.Duration
+	MemoryUsage    int64
 }
 
 // NewStreamingMerger 创建新的流式合并器
@@ -124,16 +124,16 @@ func NewStreamingMerger(options *MergeOptions) *StreamingMerger {
 
 	// 创建流式配置
 	streamingConfig := DefaultStreamingConfig()
-	
+
 	// 根据选项调整流式配置
 	if options.MaxMemoryUsage > 0 {
 		// 根据内存大小调整阈值
 		if options.MaxMemoryUsage < 50*1024*1024 { // 小于50MB
-			streamingConfig.MemoryWarningThreshold = 0.60  // 更保守
+			streamingConfig.MemoryWarningThreshold = 0.60 // 更保守
 			streamingConfig.MemoryCriticalThreshold = 0.75
 		}
 	}
-	
+
 	if options.ConcurrentWorkers > 0 {
 		streamingConfig.MaxConcurrentChunks = options.ConcurrentWorkers
 	}
@@ -244,9 +244,9 @@ func (sm *StreamingMerger) MergeFiles(files []string, outputPath string, options
 }
 
 // MergeStreaming 执行流式合并，支持进度回调和取消
-func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, outputPath string, 
+func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, outputPath string,
 	progressCallback func(progress float64, message string)) (*MergeResult, error) {
-	
+
 	sm.mutex.Lock()
 	defer sm.mutex.Unlock()
 
@@ -289,7 +289,7 @@ func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, o
 	// 第一步：验证所有输入文件
 	sm.progressTracker.SetCurrentStep(1, "验证输入文件")
 	validFiles := make([]string, 0, len(files))
-	
+
 	for i, file := range files {
 		// 检查取消
 		if ctx.Err() != nil {
@@ -329,12 +329,12 @@ func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, o
 
 	// 第二步：执行智能合并策略选择
 	sm.progressTracker.SetCurrentStep(2, "合并PDF文件")
-	
+
 	var mergeErr error
-	
+
 	// 针对大文件进行优化
 	sm.optimizeForLargeFiles(validFiles)
-	
+
 	// 根据文件特征选择合并策略
 	if sm.shouldUseConcurrentProcessing(validFiles) {
 		sm.progressTracker.UpdateStepProgress(0, "使用并发处理模式")
@@ -349,7 +349,7 @@ func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, o
 		sm.progressTracker.UpdateStepProgress(0, "使用标准合并模式")
 		mergeErr = sm.performStreamingMerge(ctx, validFiles, outputPath)
 	}
-	
+
 	if mergeErr != nil {
 		if rollbackMgr != nil && backupPath != "" {
 			_ = rollbackMgr.RestoreFile(backupPath, outputPath)
@@ -359,7 +359,7 @@ func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, o
 
 	// 第三步：后处理和验证
 	sm.progressTracker.SetCurrentStep(3, "验证输出文件")
-	
+
 	if err := sm.validateOutputFile(outputPath); err != nil {
 		if rollbackMgr != nil && backupPath != "" {
 			_ = rollbackMgr.RestoreFile(backupPath, outputPath)
@@ -388,7 +388,7 @@ func (sm *StreamingMerger) MergeStreaming(ctx context.Context, files []string, o
 func (sm *StreamingMerger) MergeFilesLegacy(mainFile string, additionalFiles []string, outputPath string, progressWriter io.Writer) (*MergeResult, error) {
 	// 将参数转换为新接口格式
 	allFiles := append([]string{mainFile}, additionalFiles...)
-	
+
 	// 创建进度回调函数
 	var progressCallback func(progress float64, message string)
 	if progressWriter != nil {
@@ -401,8 +401,6 @@ func (sm *StreamingMerger) MergeFilesLegacy(mainFile string, additionalFiles []s
 	ctx := context.Background()
 	return sm.MergeStreaming(ctx, allFiles, outputPath, progressCallback)
 }
-
-
 
 // forceGC 强制垃圾回收
 func (sm *StreamingMerger) forceGC() {
@@ -531,7 +529,7 @@ func (sm *StreamingMerger) performStreamingMergeWithChunking(ctx context.Context
 			}
 		}(i, i/chunkSize, chunk, tempFile)
 		// 更新进度
-		progress := float64(i) / float64(len(files)) * 80 + 10
+		progress := float64(i)/float64(len(files))*80 + 10
 		sm.updateProgress(progress, fmt.Sprintf("处理分块 %d/%d", (i/chunkSize)+1, (len(files)+chunkSize-1)/chunkSize))
 	}
 	wg.Wait()
@@ -557,27 +555,27 @@ func (sm *StreamingMerger) calculateOptimalChunkSize(files []string) int {
 	if config == nil {
 		config = DefaultStreamingConfig()
 	}
-	
+
 	// 如果禁用自适应分块，返回固定大小
 	if !config.EnableAdaptiveChunking {
 		return (config.MinChunkSize + config.MaxChunkSize) / 2
 	}
-	
+
 	// 基于内存使用情况和文件数量计算最优分块大小
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	availableMemory := sm.maxMemoryUsage - int64(m.Alloc)
 	if availableMemory <= 0 {
 		return config.MinChunkSize // 内存不足时使用最小分块
 	}
-	
+
 	// 分析文件特征
 	fileAnalysis := sm.analyzeFiles(files)
-	
+
 	// 基于文件分析结果计算分块大小
 	var optimalChunkSize int
-	
+
 	if fileAnalysis.HasLargeFiles {
 		// 有大文件时使用较小的分块
 		optimalChunkSize = config.MinChunkSize + 1
@@ -598,7 +596,7 @@ func (sm *StreamingMerger) calculateOptimalChunkSize(files []string) int {
 			}
 		}
 	}
-	
+
 	// 限制分块大小范围
 	if optimalChunkSize < config.MinChunkSize {
 		return config.MinChunkSize
@@ -606,7 +604,7 @@ func (sm *StreamingMerger) calculateOptimalChunkSize(files []string) int {
 	if optimalChunkSize > config.MaxChunkSize {
 		return config.MaxChunkSize
 	}
-	
+
 	return optimalChunkSize
 }
 
@@ -626,63 +624,63 @@ func (sm *StreamingMerger) analyzeFiles(files []string) *FileAnalysis {
 		FileCount: len(files),
 		MinSize:   int64(^uint64(0) >> 1), // 最大int64值
 	}
-	
+
 	config := sm.streamingConfig
 	if config == nil {
 		config = DefaultStreamingConfig()
 	}
-	
+
 	for _, file := range files {
 		if info, err := os.Stat(file); err == nil {
 			size := info.Size()
 			analysis.TotalSize += size
-			
+
 			if size > analysis.MaxSize {
 				analysis.MaxSize = size
 			}
 			if size < analysis.MinSize {
 				analysis.MinSize = size
 			}
-			
+
 			if size > config.LargeFileThreshold {
 				analysis.HasLargeFiles = true
 			}
 		}
 	}
-	
+
 	if analysis.FileCount > 0 {
 		analysis.AvgSize = analysis.TotalSize / int64(analysis.FileCount)
 	}
-	
+
 	if analysis.MinSize == int64(^uint64(0)>>1) {
 		analysis.MinSize = 0
 	}
-	
+
 	return analysis
 }
 
 // predictOptimalChunkSize 预测最优分块大小
 func (sm *StreamingMerger) predictOptimalChunkSize(analysis *FileAnalysis, availableMemory int64) int {
 	config := sm.streamingConfig
-	
+
 	// 基于历史数据和机器学习的简单预测模型
 	// 这里使用启发式算法
-	
+
 	// 内存使用预测因子
 	memoryFactor := float64(availableMemory) / float64(sm.maxMemoryUsage)
-	
+
 	// 文件大小因子
 	sizeFactor := 1.0
 	if analysis.AvgSize > 0 {
 		sizeFactor = math.Min(2.0, float64(config.LargeFileThreshold)/float64(analysis.AvgSize))
 	}
-	
+
 	// 文件数量因子
 	countFactor := math.Max(0.5, math.Min(2.0, 10.0/float64(analysis.FileCount)))
-	
+
 	// 综合计算
 	predictedSize := float64(config.MaxChunkSize) * memoryFactor * sizeFactor * countFactor
-	
+
 	return int(math.Round(predictedSize))
 }
 
@@ -732,7 +730,7 @@ func (sm *StreamingMerger) performBatchMerge(ctx context.Context, files []string
 		batch := files[i:end]
 		batchNum := (i / batchSize) + 1
 		totalBatches := (len(files) + batchSize - 1) / batchSize
-		
+
 		sm.logger("处理批次 %d/%d，文件数: %d", batchNum, totalBatches, len(batch))
 
 		// 检查内存压力并优化
@@ -745,25 +743,25 @@ func (sm *StreamingMerger) performBatchMerge(ctx context.Context, files []string
 		tempFiles = append(tempFiles, tempFile)
 
 		// 更新进度
-		progress := float64(i) / float64(len(files)) * 70 + 20 // 合并占70%，从20%开始
-		sm.progressTracker.UpdateStepProgress(progress, 
+		progress := float64(i)/float64(len(files))*70 + 20 // 合并占70%，从20%开始
+		sm.progressTracker.UpdateStepProgress(progress,
 			fmt.Sprintf("处理批次 %d/%d", batchNum, totalBatches))
 
 		// 合并当前批次
 		startTime := time.Now()
 		var err error
-		
+
 		if sm.adapter != nil {
 			err = sm.adapter.MergeFiles(batch, tempFile)
 		} else {
 			err = sm.fallbackMerge(batch, tempFile)
 		}
-		
+
 		if err != nil {
 			sm.logger("批次 %d 合并失败: %v", batchNum, err)
 			return fmt.Errorf("批次 %d 合并失败: %w", batchNum, err)
 		}
-		
+
 		processingTime := time.Since(startTime)
 		sm.logger("批次 %d 合并完成，耗时: %v", batchNum, processingTime)
 
@@ -771,7 +769,7 @@ func (sm *StreamingMerger) performBatchMerge(ctx context.Context, files []string
 		if batchNum%2 == 0 { // 每2个批次优化一次
 			sm.optimizeMemoryUsage()
 		}
-		
+
 		// 检查临时文件大小，如果过大则进行中间合并
 		if len(tempFiles) >= 10 {
 			sm.logger("临时文件过多，执行中间合并")
@@ -787,7 +785,7 @@ func (sm *StreamingMerger) performBatchMerge(ctx context.Context, files []string
 	// 合并所有临时文件
 	sm.progressTracker.UpdateStepProgress(90, "合并最终结果")
 	sm.logger("开始最终合并，临时文件数: %d", len(tempFiles))
-	
+
 	if sm.adapter != nil {
 		return sm.adapter.MergeFiles(tempFiles, outputPath)
 	}
@@ -801,22 +799,22 @@ func (sm *StreamingMerger) calculateOptimalBatchSize(files []string) int {
 	if config == nil {
 		config = DefaultStreamingConfig()
 	}
-	
+
 	// 分析文件特征
 	analysis := sm.analyzeFiles(files)
-	
+
 	// 基于内存使用情况计算批次大小
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	availableMemory := sm.maxMemoryUsage - int64(m.Alloc)
 	if availableMemory <= 0 {
 		return 2 // 内存不足时使用最小批次
 	}
-	
+
 	// 基于文件大小和可用内存计算
 	var batchSize int
-	
+
 	if analysis.HasLargeFiles {
 		// 有大文件时使用较小的批次
 		batchSize = 3
@@ -834,7 +832,7 @@ func (sm *StreamingMerger) calculateOptimalBatchSize(files []string) int {
 			batchSize = 8
 		}
 	}
-	
+
 	// 限制批次大小范围
 	if batchSize < 2 {
 		return 2
@@ -842,7 +840,7 @@ func (sm *StreamingMerger) calculateOptimalBatchSize(files []string) int {
 	if batchSize > 15 {
 		return 15
 	}
-	
+
 	return batchSize
 }
 
@@ -850,15 +848,15 @@ func (sm *StreamingMerger) calculateOptimalBatchSize(files []string) int {
 func (sm *StreamingMerger) shouldOptimizeMemoryForBatch(batch []string) bool {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	currentMemory := int64(m.Alloc)
 	memoryPressure := float64(currentMemory) / float64(sm.maxMemoryUsage)
-	
+
 	// 内存压力超过60%时优化
 	if memoryPressure > 0.6 {
 		return true
 	}
-	
+
 	// 检查批次中是否有大文件
 	for _, file := range batch {
 		if info, err := os.Stat(file); err == nil {
@@ -867,7 +865,7 @@ func (sm *StreamingMerger) shouldOptimizeMemoryForBatch(batch []string) bool {
 			}
 		}
 	}
-	
+
 	return false
 }
 
@@ -876,12 +874,12 @@ func (sm *StreamingMerger) performIntermediateMerge(ctx context.Context, tempFil
 	if len(tempFiles) <= 1 {
 		return nil
 	}
-	
+
 	sm.logger("执行中间合并，文件数: %d", len(tempFiles))
-	
+
 	// 创建中间合并文件
 	intermediateFile := sm.generateTempPath(outputPath)
-	
+
 	// 合并临时文件
 	var err error
 	if sm.adapter != nil {
@@ -889,14 +887,14 @@ func (sm *StreamingMerger) performIntermediateMerge(ctx context.Context, tempFil
 	} else {
 		err = sm.fallbackMerge(tempFiles, intermediateFile)
 	}
-	
+
 	if err != nil {
 		return fmt.Errorf("中间合并失败: %w", err)
 	}
-	
+
 	// 用中间文件替换原有临时文件
 	tempFiles = []string{intermediateFile}
-	
+
 	sm.logger("中间合并完成")
 	return nil
 }
@@ -921,7 +919,7 @@ func (sm *StreamingMerger) shouldUseMemoryOptimization(files []string) bool {
 	// 检查文件总大小和平均大小
 	totalSize := int64(0)
 	largeFileCount := 0
-	
+
 	for _, file := range files {
 		if info, err := os.Stat(file); err == nil {
 			totalSize += info.Size()
@@ -960,30 +958,30 @@ func (sm *StreamingMerger) shouldUseConcurrentProcessing(files []string) bool {
 	if config == nil {
 		config = DefaultStreamingConfig()
 	}
-	
+
 	// 文件数量少于4个时不使用并发
 	if len(files) < 4 {
 		return false
 	}
-	
+
 	// 检查系统资源
 	if runtime.NumCPU() < 2 {
 		return false // 单核系统不使用并发
 	}
-	
+
 	// 检查内存压力
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	memoryPressure := float64(m.Alloc) / float64(sm.maxMemoryUsage)
-	
+
 	// 内存压力过高时不使用并发
 	if memoryPressure > 0.7 {
 		return false
 	}
-	
+
 	// 分析文件特征
 	analysis := sm.analyzeFiles(files)
-	
+
 	// 如果有太多大文件，不使用并发（避免内存爆炸）
 	largeFileCount := 0
 	for _, file := range files {
@@ -993,21 +991,21 @@ func (sm *StreamingMerger) shouldUseConcurrentProcessing(files []string) bool {
 			}
 		}
 	}
-	
+
 	if largeFileCount > config.MaxConcurrentChunks {
 		return false
 	}
-	
+
 	// 文件数量适中且系统资源充足时使用并发
 	if len(files) >= 4 && len(files) <= 20 && !analysis.HasLargeFiles {
 		return true
 	}
-	
+
 	// 文件较多但平均大小不大时使用并发
 	if len(files) > 8 && analysis.AvgSize < 5*1024*1024 {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -1016,20 +1014,20 @@ func (sm *StreamingMerger) shouldUseStreamingMode(files []string) bool {
 	// 检查系统内存压力
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	// 计算内存压力指标
 	memoryPressure := float64(m.Alloc) / float64(sm.maxMemoryUsage)
-	
+
 	// 内存压力超过50%时使用流式模式
 	if memoryPressure > 0.5 {
 		return true
 	}
-	
+
 	// 文件数量超过5个时使用流式模式
 	if len(files) > 5 {
 		return true
 	}
-	
+
 	// 检查是否有超大文件（超过20MB）
 	for _, file := range files {
 		if info, err := os.Stat(file); err == nil {
@@ -1038,7 +1036,7 @@ func (sm *StreamingMerger) shouldUseStreamingMode(files []string) bool {
 			}
 		}
 	}
-	
+
 	return false
 }
 
@@ -1046,57 +1044,57 @@ func (sm *StreamingMerger) shouldUseStreamingMode(files []string) bool {
 func (sm *StreamingMerger) optimizeMemoryUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	beforeGC := m.Alloc
 	beforeSys := m.Sys
-	
-	sm.logger("开始内存优化，当前分配: %d MB, 系统内存: %d MB", 
+
+	sm.logger("开始内存优化，当前分配: %d MB, 系统内存: %d MB",
 		beforeGC/(1024*1024), beforeSys/(1024*1024))
-	
+
 	// 第一阶段：标准垃圾回收
 	runtime.GC()
 	time.Sleep(10 * time.Millisecond)
-	
+
 	// 第二阶段：强制释放未使用的内存
 	runtime.GC()
 	debug.FreeOSMemory() // 释放操作系统内存
 	time.Sleep(50 * time.Millisecond)
-	
+
 	// 检查GC效果
 	runtime.ReadMemStats(&m)
 	afterGC := m.Alloc
 	afterSys := m.Sys
-	
+
 	// 计算内存释放效果
 	memoryReleased := beforeGC - afterGC
 	sysMemoryReleased := beforeSys - afterSys
-	
-	sm.logger("内存优化完成，释放内存: %d MB, 系统内存释放: %d MB", 
+
+	sm.logger("内存优化完成，释放内存: %d MB, 系统内存释放: %d MB",
 		memoryReleased/(1024*1024), sysMemoryReleased/(1024*1024))
-	
+
 	// 如果内存释放效果不佳，进行更激进的优化
 	if afterGC > beforeGC*75/100 {
 		sm.logger("内存释放效果不佳，进行激进优化")
-		
+
 		// 设置更低的GC目标
 		originalGCPercent := debug.SetGCPercent(25) // 降低GC触发阈值到25%
-		
+
 		// 多次强制GC
 		for i := 0; i < 3; i++ {
 			runtime.GC()
 			debug.FreeOSMemory()
 			time.Sleep(50 * time.Millisecond)
 		}
-		
+
 		// 恢复原始GC设置
 		debug.SetGCPercent(originalGCPercent)
-		
+
 		// 最终检查
 		runtime.ReadMemStats(&m)
 		finalAlloc := m.Alloc
 		sm.logger("激进优化后内存: %d MB", finalAlloc/(1024*1024))
 	}
-	
+
 	// 如果配置了渐进式GC，启用它
 	if sm.streamingConfig != nil && sm.streamingConfig.EnableProgressiveGC {
 		sm.enableProgressiveGC()
@@ -1108,22 +1106,22 @@ func (sm *StreamingMerger) enableProgressiveGC() {
 	if sm.streamingConfig == nil {
 		return
 	}
-	
+
 	// 启动后台GC协程
 	go func() {
 		ticker := time.NewTicker(sm.streamingConfig.GCInterval)
 		defer ticker.Stop()
-		
+
 		for {
 			select {
 			case <-ticker.C:
 				// 检查内存压力
 				var m runtime.MemStats
 				runtime.ReadMemStats(&m)
-				
+
 				currentMemory := int64(m.Alloc)
 				memoryPressure := float64(currentMemory) / float64(sm.maxMemoryUsage)
-				
+
 				// 根据内存压力调整GC频率
 				if memoryPressure > sm.streamingConfig.MemoryCriticalThreshold {
 					runtime.GC()
@@ -1149,8 +1147,8 @@ type MemoryMonitor struct {
 func NewMemoryMonitor(maxMemory int64) *MemoryMonitor {
 	return &MemoryMonitor{
 		maxMemory:     maxMemory,
-		warningLevel:  maxMemory * 70 / 100,  // 70%警告
-		criticalLevel: maxMemory * 85 / 100,  // 85%严重
+		warningLevel:  maxMemory * 70 / 100, // 70%警告
+		criticalLevel: maxMemory * 85 / 100, // 85%严重
 		checkInterval: 100 * time.Millisecond,
 	}
 }
@@ -1162,18 +1160,18 @@ func (mm *MemoryMonitor) CheckMemoryPressure() MemoryPressureLevel {
 		return MemoryPressureNormal // 避免频繁检查
 	}
 	mm.lastCheck = now
-	
+
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	currentMemory := int64(m.Alloc)
-	
+
 	if currentMemory >= mm.criticalLevel {
 		return MemoryPressureCritical
 	} else if currentMemory >= mm.warningLevel {
 		return MemoryPressureWarning
 	}
-	
+
 	return MemoryPressureNormal
 }
 
@@ -1192,11 +1190,11 @@ func (sm *StreamingMerger) handleMemoryPressure(level MemoryPressureLevel) {
 	case MemoryPressureWarning:
 		// 警告级别：进行标准GC
 		runtime.GC()
-		
+
 	case MemoryPressureCritical:
 		// 严重级别：激进的内存清理
 		sm.optimizeMemoryUsage()
-		
+
 		// 如果仍然严重，暂停处理
 		var m runtime.MemStats
 		runtime.ReadMemStats(&m)
@@ -1210,7 +1208,7 @@ func (sm *StreamingMerger) handleMemoryPressure(level MemoryPressureLevel) {
 func (sm *StreamingMerger) fallbackMerge(files []string, outputPath string) error {
 	// 创建一个简单的占位符实现
 	// 在实际部署中，这里应该有一个可工作的PDF合并实现
-	
+
 	if len(files) == 0 {
 		return &PDFError{
 			Type:    ErrorInvalidInput,
@@ -1224,9 +1222,9 @@ func (sm *StreamingMerger) fallbackMerge(files []string, outputPath string) erro
 	}
 
 	// 创建占位符合并结果
-	content := fmt.Sprintf("Fallback merge result\nFiles: %v\nOutput: %s\nTimestamp: %s\n", 
+	content := fmt.Sprintf("Fallback merge result\nFiles: %v\nOutput: %s\nTimestamp: %s\n",
 		files, outputPath, time.Now().Format(time.RFC3339))
-	
+
 	return os.WriteFile(outputPath+".fallback", []byte(content), 0644)
 }
 
@@ -1383,47 +1381,47 @@ func (sm *StreamingMerger) processConcurrently(ctx context.Context, files []stri
 	if config == nil {
 		config = DefaultStreamingConfig()
 	}
-	
+
 	// 如果文件数量较少，不使用并发
 	if len(files) <= 3 {
 		return sm.performDirectMerge(ctx, files, outputPath)
 	}
-	
+
 	sm.logger("开始并发处理，文件数: %d, 最大并发数: %d", len(files), config.MaxConcurrentChunks)
-	
+
 	// 创建工作池
 	semaphore := make(chan struct{}, config.MaxConcurrentChunks)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var processingErrors []error
-	
+
 	// 分组处理文件
 	chunkSize := (len(files) + config.MaxConcurrentChunks - 1) / config.MaxConcurrentChunks
 	if chunkSize < 2 {
 		chunkSize = 2
 	}
-	
+
 	tempFiles := make([]string, 0)
 	defer sm.cleanupTempFiles(tempFiles)
-	
+
 	// 并发处理每个分组
 	for i := 0; i < len(files); i += chunkSize {
 		end := i + chunkSize
 		if end > len(files) {
 			end = len(files)
 		}
-		
+
 		chunk := files[i:end]
 		chunkIndex := i / chunkSize
-		
+
 		wg.Add(1)
 		go func(chunk []string, index int) {
 			defer wg.Done()
-			
+
 			// 获取信号量
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
-			
+
 			// 检查取消
 			if ctx.Err() != nil {
 				mu.Lock()
@@ -1431,20 +1429,20 @@ func (sm *StreamingMerger) processConcurrently(ctx context.Context, files []stri
 				mu.Unlock()
 				return
 			}
-			
+
 			sm.logger("开始处理分组 %d，文件数: %d", index+1, len(chunk))
-			
+
 			// 创建临时文件
 			tempFile := sm.generateTempPath(outputPath)
-			
+
 			// 处理分组
 			startTime := time.Now()
 			var err error
-			
+
 			// 添加超时控制
 			chunkCtx, cancel := context.WithTimeout(ctx, config.ChunkProcessTimeout)
 			defer cancel()
-			
+
 			done := make(chan error, 1)
 			go func() {
 				if sm.adapter != nil {
@@ -1453,16 +1451,16 @@ func (sm *StreamingMerger) processConcurrently(ctx context.Context, files []stri
 					done <- sm.fallbackMerge(chunk, tempFile)
 				}
 			}()
-			
+
 			select {
 			case err = <-done:
 				// 处理完成
 			case <-chunkCtx.Done():
 				err = fmt.Errorf("分组 %d 处理超时", index+1)
 			}
-			
+
 			processingTime := time.Since(startTime)
-			
+
 			if err != nil {
 				sm.logger("分组 %d 处理失败: %v", index+1, err)
 				mu.Lock()
@@ -1470,38 +1468,38 @@ func (sm *StreamingMerger) processConcurrently(ctx context.Context, files []stri
 				mu.Unlock()
 				return
 			}
-			
+
 			sm.logger("分组 %d 处理完成，耗时: %v", index+1, processingTime)
-			
+
 			// 添加到临时文件列表
 			mu.Lock()
 			tempFiles = append(tempFiles, tempFile)
 			mu.Unlock()
-			
+
 			// 更新进度
-			progress := float64(index+1) / float64((len(files)+chunkSize-1)/chunkSize) * 80 + 10
+			progress := float64(index+1)/float64((len(files)+chunkSize-1)/chunkSize)*80 + 10
 			sm.updateProgress(progress, fmt.Sprintf("完成分组 %d", index+1))
-			
+
 		}(chunk, chunkIndex)
 	}
-	
+
 	// 等待所有分组完成
 	wg.Wait()
-	
+
 	// 检查处理错误
 	if len(processingErrors) > 0 {
 		return fmt.Errorf("并发处理失败: %v", processingErrors[0])
 	}
-	
+
 	sm.logger("所有分组处理完成，开始最终合并")
-	
+
 	// 最终合并所有临时文件
 	sm.updateProgress(90, "合并最终结果")
-	
+
 	if sm.adapter != nil {
 		return sm.adapter.MergeFiles(tempFiles, outputPath)
 	}
-	
+
 	return sm.fallbackMerge(tempFiles, outputPath)
 }
 
@@ -1510,14 +1508,14 @@ func (sm *StreamingMerger) configurePDFCPUForMinimalMemory() {
 	if sm.config == nil {
 		sm.config = &PDFCPUConfig{}
 	}
-	
+
 	// 配置最小内存使用模式
-	sm.config.WriteObjectStream = true  // 启用对象流压缩
-	sm.config.WriteXRefStream = true    // 启用交叉引用流
+	sm.config.WriteObjectStream = true   // 启用对象流压缩
+	sm.config.WriteXRefStream = true     // 启用交叉引用流
 	sm.config.ValidationMode = "relaxed" // 使用宽松验证模式减少内存使用
-	
+
 	sm.logger("已配置pdfcpu最小内存模式")
-	
+
 	// 如果有适配器，更新其配置
 	if sm.adapter != nil {
 		// 重新创建适配器以应用新配置
@@ -1530,43 +1528,43 @@ func (sm *StreamingMerger) configurePDFCPUForMinimalMemory() {
 			sm.logger("更新pdfcpu适配器配置失败: %v", err)
 		}
 	}
-	
+
 	// 设置运行时参数以优化内存使用
-	debug.SetGCPercent(50)        // 降低GC触发阈值
+	debug.SetGCPercent(50)                  // 降低GC触发阈值
 	debug.SetMemoryLimit(sm.maxMemoryUsage) // 设置内存限制
-	
+
 	sm.logger("已设置运行时内存优化参数")
 }
 
 // optimizeForLargeFiles 针对大文件优化处理策略
 func (sm *StreamingMerger) optimizeForLargeFiles(files []string) {
 	analysis := sm.analyzeFiles(files)
-	
+
 	if !analysis.HasLargeFiles {
 		return
 	}
-	
+
 	sm.logger("检测到大文件，启用大文件优化模式")
-	
+
 	// 调整流式配置
 	if sm.streamingConfig == nil {
 		sm.streamingConfig = DefaultStreamingConfig()
 	}
-	
+
 	// 针对大文件的优化配置
-	sm.streamingConfig.MinChunkSize = 2           // 减小最小分块大小
-	sm.streamingConfig.MaxChunkSize = 5           // 减小最大分块大小
-	sm.streamingConfig.MaxConcurrentChunks = 2    // 减少并发数
-	sm.streamingConfig.EnableProgressiveGC = true // 启用渐进式GC
+	sm.streamingConfig.MinChunkSize = 2                   // 减小最小分块大小
+	sm.streamingConfig.MaxChunkSize = 5                   // 减小最大分块大小
+	sm.streamingConfig.MaxConcurrentChunks = 2            // 减少并发数
+	sm.streamingConfig.EnableProgressiveGC = true         // 启用渐进式GC
 	sm.streamingConfig.GCInterval = 50 * time.Millisecond // 增加GC频率
-	
+
 	// 降低内存阈值
 	sm.streamingConfig.MemoryWarningThreshold = 0.50  // 50%
 	sm.streamingConfig.MemoryCriticalThreshold = 0.65 // 65%
-	
+
 	// 配置pdfcpu最小内存模式
 	sm.configurePDFCPUForMinimalMemory()
-	
+
 	sm.logger("大文件优化配置完成")
 }
 
@@ -1589,4 +1587,3 @@ func (sm *StreamingMerger) Close() error {
 
 	return nil
 }
-

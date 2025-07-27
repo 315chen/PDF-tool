@@ -227,7 +227,7 @@ func TestMergeStrategies(t *testing.T) {
 	t.Run("TestValidFileFiltering", func(t *testing.T) {
 		// 这个测试模拟合并过程中的文件过滤
 		tempDir := os.TempDir()
-		
+
 		// 创建有效的PDF文件
 		validFile := filepath.Join(tempDir, "valid.pdf")
 		validContent := "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
@@ -245,7 +245,7 @@ func TestMergeStrategies(t *testing.T) {
 		defer os.Remove(emptyFile)
 
 		files := []string{validFile, invalidFile, emptyFile}
-		
+
 		// 测试文件验证
 		validCount := 0
 		for _, file := range files {
@@ -313,7 +313,7 @@ func TestErrorCollectorRefactor(t *testing.T) {
 // BenchmarkPDFValidation 性能测试
 func BenchmarkPDFValidation(b *testing.B) {
 	service := NewPDFService()
-	
+
 	// 创建测试文件
 	testFile := filepath.Join(os.TempDir(), "benchmark.pdf")
 	testContent := "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF"
@@ -329,7 +329,7 @@ func BenchmarkPDFValidation(b *testing.B) {
 // BenchmarkEncryptionCheck 加密检查性能测试
 func BenchmarkEncryptionCheck(b *testing.B) {
 	service := NewPDFService()
-	
+
 	// 创建测试文件
 	testFile := filepath.Join(os.TempDir(), "benchmark_encrypt.pdf")
 	testContent := "%PDF-1.4\n/Encrypt << /Filter /Standard >>\n%%EOF"

@@ -42,15 +42,15 @@ func CheckPDFCPUAvailability() *PDFCPUAvailability {
 
 	// TODO: 当网络恢复时，取消注释以下代码来检查pdfcpu Go库
 	/*
-	// 尝试导入pdfcpu
-	import (
-		"github.com/pdfcpu/pdfcpu/pkg/api"
-		"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
-	)
-	
-	// 如果能成功导入，设置为可用
-	availability.isAvailable = true
-	availability.version = pdfcpu.VersionStr + " (Go Library)"
+		// 尝试导入pdfcpu
+		import (
+			"github.com/pdfcpu/pdfcpu/pkg/api"
+			"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
+		)
+
+		// 如果能成功导入，设置为可用
+		availability.isAvailable = true
+		availability.version = pdfcpu.VersionStr + " (Go Library)"
 	*/
 
 	// 如果CLI和Go库都不可用

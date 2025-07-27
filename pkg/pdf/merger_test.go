@@ -55,13 +55,13 @@ func TestStreamingMerger_MemoryManagement(t *testing.T) {
 
 	// 测试垃圾回收
 	initialMem := merger.getCurrentMemoryUsage()
-	
+
 	// 分配一些内存
 	data := make([]byte, 1024*1024) // 1MB
 	_ = data
-	
+
 	merger.forceGC()
-	
+
 	finalMem := merger.getCurrentMemoryUsage()
 	t.Logf("垃圾回收前: %d bytes, 垃圾回收后: %d bytes", initialMem, finalMem)
 }
@@ -100,7 +100,7 @@ func TestStreamingMerger_ProgressTracking(t *testing.T) {
 
 	var progressBuffer bytes.Buffer
 	_, err = merger.MergeFilesLegacy(mainFile, []string{}, outputFile, &progressBuffer)
-	
+
 	// 检查是否有进度跟踪器
 	if merger.GetProgressTracker() == nil {
 		t.Error("合并后应该有进度跟踪器")
@@ -160,12 +160,12 @@ func TestMergeOptions_Validation(t *testing.T) {
 func TestMergeResult_Structure(t *testing.T) {
 	// 测试合并结果结构
 	result := &MergeResult{
-		OutputPath:      "/path/to/output.pdf",
-		TotalPages:      100,
-		ProcessedFiles:  5,
-		SkippedFiles:    []string{"bad1.pdf", "bad2.pdf"},
-		ProcessingTime:  time.Second * 30,
-		MemoryUsage:     50 * 1024 * 1024,
+		OutputPath:     "/path/to/output.pdf",
+		TotalPages:     100,
+		ProcessedFiles: 5,
+		SkippedFiles:   []string{"bad1.pdf", "bad2.pdf"},
+		ProcessingTime: time.Second * 30,
+		MemoryUsage:    50 * 1024 * 1024,
 	}
 
 	if result.OutputPath != "/path/to/output.pdf" {

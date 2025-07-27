@@ -41,12 +41,12 @@ func (h *TestHelper) GetTempDir() string {
 func (h *TestHelper) CreateTestFile(filename string, content []byte) string {
 	tempDir := h.GetTempDir()
 	filePath := filepath.Join(tempDir, filename)
-	
+
 	err := os.WriteFile(filePath, content, 0644)
 	if err != nil {
 		h.t.Fatalf("Failed to create test file %s: %v", filePath, err)
 	}
-	
+
 	return filePath
 }
 
@@ -60,12 +60,12 @@ func (h *TestHelper) CreateTestPDF(filename string) string {
 func (h *TestHelper) CreateTestDirectory(dirname string) string {
 	tempDir := h.GetTempDir()
 	dirPath := filepath.Join(tempDir, dirname)
-	
+
 	err := os.MkdirAll(dirPath, 0755)
 	if err != nil {
 		h.t.Fatalf("Failed to create test directory %s: %v", dirPath, err)
 	}
-	
+
 	return dirPath
 }
 
@@ -80,7 +80,7 @@ func (h *TestHelper) AddCleanup(cleanup func()) {
 func (h *TestHelper) Cleanup() {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
-	
+
 	for i := len(h.cleanup) - 1; i >= 0; i-- {
 		h.cleanup[i]()
 	}
@@ -201,10 +201,10 @@ func (h *TestHelper) AssertFileNotExists(filePath string, msgAndArgs ...interfac
 func (h *TestHelper) WaitForCondition(condition func() bool, timeout time.Duration, message string) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	
+
 	ticker := time.NewTicker(10 * time.Millisecond)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -260,7 +260,7 @@ func (m *MockTimeProvider) AddTime(d time.Duration) {
 
 // TestRunner 测试运行器
 type TestRunner struct {
-	helper   *TestHelper
+	helper    *TestHelper
 	scenarios []TestScenario
 }
 
@@ -318,7 +318,7 @@ func (r *BenchmarkRunner) RunBenchmarks(b *testing.B) {
 		b.Run(benchmark.Name, func(b *testing.B) {
 			data := benchmark.Setup(benchmark.DataSize)
 			b.ResetTimer()
-			
+
 			for i := 0; i < b.N; i++ {
 				err := benchmark.Operation(data)
 				if err != nil {

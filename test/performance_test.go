@@ -74,7 +74,7 @@ func TestPerformance_FileValidation(t *testing.T) {
 	for _, tf := range testFiles {
 		t.Run(tf.name, func(t *testing.T) {
 			// 创建测试文件
-			testFile := test_utils.CreateLargePDFFile(t, tempDir, 
+			testFile := test_utils.CreateLargePDFFile(t, tempDir,
 				fmt.Sprintf("perf_%s.pdf", tf.name), tf.size)
 
 			// 测量性能
@@ -113,16 +113,16 @@ func TestPerformance_MemoryUsage(t *testing.T) {
 	fileCount := 20
 	files := make([]string, fileCount)
 	for i := 0; i < fileCount; i++ {
-		files[i] = test_utils.CreateLargePDFFile(t, tempDir, 
+		files[i] = test_utils.CreateLargePDFFile(t, tempDir,
 			fmt.Sprintf("memory_test_%d.pdf", i), 50) // 50KB each
 	}
 
 	// 测试不同内存限制下的性能
 	memoryLimits := []int64{
-		1 * 1024 * 1024,   // 1MB
-		5 * 1024 * 1024,   // 5MB
-		10 * 1024 * 1024,  // 10MB
-		50 * 1024 * 1024,  // 50MB
+		1 * 1024 * 1024,  // 1MB
+		5 * 1024 * 1024,  // 5MB
+		10 * 1024 * 1024, // 10MB
+		50 * 1024 * 1024, // 50MB
 	}
 
 	for _, limit := range memoryLimits {
@@ -160,7 +160,7 @@ func TestPerformance_MemoryUsage(t *testing.T) {
 
 			// 检查内存使用是否在限制内
 			if metrics.MemoryUsed > limit {
-				t.Logf("内存警告: 使用了 %d bytes，超过限制 %d bytes", 
+				t.Logf("内存警告: 使用了 %d bytes，超过限制 %d bytes",
 					metrics.MemoryUsed, limit)
 			}
 		})
@@ -218,7 +218,7 @@ func TestPerformance_ConcurrentOperations(t *testing.T) {
 
 			// 检查是否有goroutine泄漏
 			if metrics.GoroutineCount > level {
-				t.Logf("Goroutine 警告: 创建了 %d 个额外的 goroutine", 
+				t.Logf("Goroutine 警告: 创建了 %d 个额外的 goroutine",
 					metrics.GoroutineCount-level)
 			}
 		})
@@ -252,7 +252,7 @@ func TestPerformance_WorkflowManager(t *testing.T) {
 	iterations := 10
 	metrics := measurePerformance(func() {
 		for i := 0; i < iterations; i++ {
-			job := model.NewMergeJob(mainFile, additionalFiles, 
+			job := model.NewMergeJob(mainFile, additionalFiles,
 				fmt.Sprintf("%s/workflow_output_%d.pdf", tempDir, i))
 
 			ctx := context.Background()
@@ -294,7 +294,7 @@ func TestPerformance_BatchProcessing(t *testing.T) {
 			// 创建测试文件
 			files := make([]string, batchSize)
 			for i := 0; i < batchSize; i++ {
-				files[i] = test_utils.CreateTestPDFFile(t, tempDir, 
+				files[i] = test_utils.CreateTestPDFFile(t, tempDir,
 					fmt.Sprintf("batch_%d_%d.pdf", batchSize, i))
 			}
 
@@ -327,7 +327,7 @@ func TestPerformance_BatchProcessing(t *testing.T) {
 			// 检查线性扩展性
 			expectedDuration := time.Duration(batchSize) * 10 * time.Millisecond
 			if metrics.Duration > expectedDuration*2 {
-				t.Logf("性能警告: 执行时间 %v 超过预期 %v 的2倍", 
+				t.Logf("性能警告: 执行时间 %v 超过预期 %v 的2倍",
 					metrics.Duration, expectedDuration)
 			}
 		})
@@ -383,7 +383,7 @@ func TestPerformance_MemoryLeaks(t *testing.T) {
 	// 检查内存泄漏
 	maxAcceptableGrowth := int64(5 * 1024 * 1024) // 5MB
 	if finalMemoryGrowth > maxAcceptableGrowth {
-		t.Logf("内存泄漏警告: 最终内存增长 %d bytes 超过可接受范围 %d bytes", 
+		t.Logf("内存泄漏警告: 最终内存增长 %d bytes 超过可接受范围 %d bytes",
 			finalMemoryGrowth, maxAcceptableGrowth)
 	}
 }

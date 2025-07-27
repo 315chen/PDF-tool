@@ -13,7 +13,7 @@ import (
 
 type RollbackManager struct {
 	backupDir string
-	mutex    sync.Mutex
+	mutex     sync.Mutex
 }
 
 // NewRollbackManager 创建回滚管理器
@@ -75,4 +75,4 @@ func copyFileForRollback(src, dst string) error {
 	defer dstFile.Close()
 	_, err = io.Copy(dstFile, srcFile)
 	return err
-} 
+}

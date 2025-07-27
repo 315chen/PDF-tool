@@ -58,7 +58,7 @@ func TestPDFInfoExtraction_EncryptedPDF(t *testing.T) {
 
 	service := NewPDFService()
 	info, err := service.GetPDFInfo(testFile)
-	
+
 	// 模拟的加密PDF无法被正确解析，这是预期的
 	if err != nil {
 		t.Logf("Expected: Encrypted PDF parsing failed: %v", err)
@@ -80,12 +80,12 @@ func TestPDFInfoExtraction_EncryptedPDF(t *testing.T) {
 // TestPDFInfoExtraction_LargePDF 测试大PDF文件的信息提取
 func TestPDFInfoExtraction_LargePDF(t *testing.T) {
 	tempDir := createTempDir(t, "large_pdf_info_test")
-	
+
 	// 使用基本PDF文件进行测试，因为CreateLargePDFFile可能生成无效的PDF
 	testFile := createTestPDFFile(t, tempDir, "large_test.pdf")
 
 	service := NewPDFService()
-	
+
 	// 测量信息提取时间
 	start := time.Now()
 	info, err := service.GetPDFInfo(testFile)
@@ -105,7 +105,7 @@ func TestPDFInfoExtraction_LargePDF(t *testing.T) {
 		t.Errorf("Info extraction took too long: %v", duration)
 	}
 
-	t.Logf("PDF Info extraction took: %v, FileSize: %s", 
+	t.Logf("PDF Info extraction took: %v, FileSize: %s",
 		duration, info.GetFormattedSize())
 }
 
@@ -128,7 +128,7 @@ func TestPDFInfoExtraction_CorruptedPDF(t *testing.T) {
 		if info.FilePath != testFile {
 			t.Errorf("Expected FilePath %s, got %s", testFile, info.FilePath)
 		}
-		t.Logf("Corrupted PDF handled gracefully: FileSize=%d, PageCount=%d", 
+		t.Logf("Corrupted PDF handled gracefully: FileSize=%d, PageCount=%d",
 			info.FileSize, info.PageCount)
 	}
 }
@@ -221,7 +221,7 @@ func TestPDFInfoExtraction_EncryptionDetails(t *testing.T) {
 
 	service := NewPDFService()
 	info, err := service.GetPDFInfo(testFile)
-	
+
 	// 模拟的加密PDF无法被正确解析，这是预期的
 	if err != nil {
 		t.Logf("Expected: Mock encrypted PDF parsing failed: %v", err)
@@ -232,7 +232,7 @@ func TestPDFInfoExtraction_EncryptionDetails(t *testing.T) {
 	// 如果意外成功解析，验证加密信息
 	if info != nil {
 		encryptionInfo := info.GetEncryptionInfo()
-		
+
 		if encrypted, ok := encryptionInfo["encrypted"].(bool); ok {
 			t.Logf("Encryption status: %t", encrypted)
 		}
@@ -284,27 +284,27 @@ func TestPDFInfoExtraction_CompareWithReader(t *testing.T) {
 
 	// 比较基本信息
 	if serviceInfo.FilePath != readerInfo.FilePath {
-		t.Errorf("FilePath mismatch: service=%s, reader=%s", 
+		t.Errorf("FilePath mismatch: service=%s, reader=%s",
 			serviceInfo.FilePath, readerInfo.FilePath)
 	}
 
 	if serviceInfo.FileSize != readerInfo.FileSize {
-		t.Errorf("FileSize mismatch: service=%d, reader=%d", 
+		t.Errorf("FileSize mismatch: service=%d, reader=%d",
 			serviceInfo.FileSize, readerInfo.FileSize)
 	}
 
 	if serviceInfo.PageCount != readerInfo.PageCount {
-		t.Errorf("PageCount mismatch: service=%d, reader=%d", 
+		t.Errorf("PageCount mismatch: service=%d, reader=%d",
 			serviceInfo.PageCount, readerInfo.PageCount)
 	}
 
 	if serviceInfo.IsEncrypted != readerInfo.IsEncrypted {
-		t.Errorf("IsEncrypted mismatch: service=%t, reader=%t", 
+		t.Errorf("IsEncrypted mismatch: service=%t, reader=%t",
 			serviceInfo.IsEncrypted, readerInfo.IsEncrypted)
 	}
 
 	if serviceInfo.Version != readerInfo.Version {
-		t.Errorf("Version mismatch: service=%s, reader=%s", 
+		t.Errorf("Version mismatch: service=%s, reader=%s",
 			serviceInfo.Version, readerInfo.Version)
 	}
 
@@ -314,7 +314,7 @@ func TestPDFInfoExtraction_CompareWithReader(t *testing.T) {
 // TestPDFInfoExtraction_BatchProcessing 测试批量信息提取
 func TestPDFInfoExtraction_BatchProcessing(t *testing.T) {
 	tempDir := createTempDir(t, "batch_processing_test")
-	
+
 	// 创建多个测试文件（只使用有效的PDF文件）
 	testFiles := []string{
 		createTestPDFFile(t, tempDir, "batch_test_1.pdf"),
@@ -325,11 +325,11 @@ func TestPDFInfoExtraction_BatchProcessing(t *testing.T) {
 	}
 
 	service := NewPDFService()
-	
+
 	// 批量处理
 	start := time.Now()
 	var results []*PDFInfo
-	
+
 	for _, file := range testFiles {
 		info, err := service.GetPDFInfo(file)
 		if err != nil {
@@ -338,9 +338,9 @@ func TestPDFInfoExtraction_BatchProcessing(t *testing.T) {
 		}
 		results = append(results, info)
 	}
-	
+
 	duration := time.Since(start)
-	
+
 	// 验证结果
 	if len(results) == 0 {
 		t.Error("Expected at least some successful results")
@@ -352,7 +352,7 @@ func TestPDFInfoExtraction_BatchProcessing(t *testing.T) {
 		t.Errorf("Average processing time too high: %v", avgTime)
 	}
 
-	t.Logf("Batch processed %d files in %v (avg: %v per file)", 
+	t.Logf("Batch processed %d files in %v (avg: %v per file)",
 		len(testFiles), duration, avgTime)
 
 	// 验证每个结果
@@ -360,12 +360,12 @@ func TestPDFInfoExtraction_BatchProcessing(t *testing.T) {
 		if info.FilePath != testFiles[i] {
 			t.Errorf("Result %d: FilePath mismatch", i)
 		}
-		
+
 		if info.FileSize <= 0 {
 			t.Errorf("Result %d: Invalid FileSize", i)
 		}
-		
-		t.Logf("File %d: %s, Size: %s, Pages: %d, Encrypted: %t", 
+
+		t.Logf("File %d: %s, Size: %s, Pages: %d, Encrypted: %t",
 			i+1, info.FilePath, info.GetFormattedSize(), info.PageCount, info.IsEncrypted)
 	}
 }
@@ -383,7 +383,7 @@ func TestPDFInfoExtraction_ErrorHandling(t *testing.T) {
 	// 测试非PDF文件
 	tempDir := createTempDir(t, "error_handling_test")
 	nonPDFFile := createTestFile(t, tempDir, "not_a_pdf.txt", []byte("This is not a PDF"))
-	
+
 	_, err = service.GetPDFInfo(nonPDFFile)
 	if err == nil {
 		t.Error("Expected error for non-PDF file")
@@ -391,7 +391,7 @@ func TestPDFInfoExtraction_ErrorHandling(t *testing.T) {
 
 	// 测试空文件
 	emptyFile := createTestFile(t, tempDir, "empty.pdf", []byte(""))
-	
+
 	_, err = service.GetPDFInfo(emptyFile)
 	if err == nil {
 		t.Error("Expected error for empty file")
@@ -403,18 +403,18 @@ func TestPDFInfoExtraction_ErrorHandling(t *testing.T) {
 // TestPDFInfoExtraction_MemoryUsage 测试内存使用情况
 func TestPDFInfoExtraction_MemoryUsage(t *testing.T) {
 	tempDir := createTempDir(t, "memory_usage_test")
-	
+
 	// 使用有效的PDF文件而不是模拟的大文件
 	var testFiles []string
 	for i := 0; i < 5; i++ {
-		file := createTestPDFFile(t, tempDir, 
+		file := createTestPDFFile(t, tempDir,
 			fmt.Sprintf("memory_test_%d.pdf", i))
 		testFiles = append(testFiles, file)
 	}
 
 	service := NewPDFService()
 	successCount := 0
-	
+
 	// 连续处理多个文件，检查内存是否正确释放
 	for i := 0; i < 3; i++ { // 重复3轮
 		for _, file := range testFiles {
@@ -423,7 +423,7 @@ func TestPDFInfoExtraction_MemoryUsage(t *testing.T) {
 				t.Logf("Failed to get info for %s: %v", file, err)
 				continue
 			}
-			
+
 			// 验证信息有效性
 			if info != nil && info.IsValid() {
 				successCount++
@@ -431,7 +431,7 @@ func TestPDFInfoExtraction_MemoryUsage(t *testing.T) {
 				t.Logf("Invalid info for %s", file)
 			}
 		}
-		
+
 		t.Logf("Completed round %d of memory usage test", i+1)
 	}
 
@@ -449,7 +449,7 @@ func TestPDFInfoExtraction_ConcurrentAccess(t *testing.T) {
 	testFile := createTestPDFFile(t, tempDir, "concurrent_test.pdf")
 
 	service := NewPDFService()
-	
+
 	// 并发访问同一个文件
 	const numGoroutines = 10
 	results := make(chan *PDFInfo, numGoroutines)
@@ -508,7 +508,7 @@ func TestPDFInfoExtraction_ConcurrentAccess(t *testing.T) {
 // TestPDFInfoExtraction_ValidationIntegration 测试与验证功能的集成
 func TestPDFInfoExtraction_ValidationIntegration(t *testing.T) {
 	tempDir := createTempDir(t, "validation_integration_test")
-	
+
 	// 创建不同类型的文件
 	validFile := createTestPDFFile(t, tempDir, "valid.pdf")
 	corruptedFile := createCorruptedPDFFile(t, tempDir, "corrupted.pdf")
@@ -576,11 +576,11 @@ func BenchmarkPDFInfoExtraction_Large(b *testing.B) {
 // TestPDFInfoExtraction_RealWorldScenarios 测试真实世界场景
 func TestPDFInfoExtraction_RealWorldScenarios(t *testing.T) {
 	tempDir := createTempDir(t, "real_world_scenarios_test")
-	
+
 	// 测试场景1：基本PDF文件
 	basicFile := createTestPDFFile(t, tempDir, "basic.pdf")
 	service := NewPDFService()
-	
+
 	info, err := service.GetPDFInfo(basicFile)
 	if err != nil {
 		t.Errorf("Failed to get info for basic PDF: %v", err)
@@ -595,25 +595,41 @@ func TestPDFInfoExtraction_RealWorldScenarios(t *testing.T) {
 		if info.PDFCPUVersion == "" {
 			t.Error("Expected pdfcpu version info")
 		}
-		t.Logf("Basic PDF: Pages=%d, Version=%s, Size=%s", 
+		t.Logf("Basic PDF: Pages=%d, Version=%s, Size=%s",
 			info.PageCount, info.Version, info.GetFormattedSize())
 	}
-	
+
 	// 测试场景2：验证权限信息的一致性
 	if info != nil && info.Permissions != nil {
 		// 检查权限标志的一致性
 		permissionCount := 0
-		if info.PrintAllowed { permissionCount++ }
-		if info.ModifyAllowed { permissionCount++ }
-		if info.CopyAllowed { permissionCount++ }
-		if info.AnnotateAllowed { permissionCount++ }
-		if info.FillFormsAllowed { permissionCount++ }
-		if info.ExtractAllowed { permissionCount++ }
-		if info.AssembleAllowed { permissionCount++ }
-		if info.PrintHighQualityAllowed { permissionCount++ }
-		
+		if info.PrintAllowed {
+			permissionCount++
+		}
+		if info.ModifyAllowed {
+			permissionCount++
+		}
+		if info.CopyAllowed {
+			permissionCount++
+		}
+		if info.AnnotateAllowed {
+			permissionCount++
+		}
+		if info.FillFormsAllowed {
+			permissionCount++
+		}
+		if info.ExtractAllowed {
+			permissionCount++
+		}
+		if info.AssembleAllowed {
+			permissionCount++
+		}
+		if info.PrintHighQualityAllowed {
+			permissionCount++
+		}
+
 		t.Logf("Permission flags set: %d/8", permissionCount)
-		
+
 		// 验证权限摘要
 		summary := info.GetPermissionSummary()
 		if summary == "" {
@@ -627,25 +643,25 @@ func TestPDFInfoExtraction_RealWorldScenarios(t *testing.T) {
 func TestPDFInfoExtraction_EdgeCases(t *testing.T) {
 	tempDir := createTempDir(t, "edge_cases_test")
 	service := NewPDFService()
-	
+
 	// 边界情况1：空路径
 	_, err := service.GetPDFInfo("")
 	if err == nil {
 		t.Error("Expected error for empty file path")
 	}
-	
+
 	// 边界情况2：目录而不是文件
 	_, err = service.GetPDFInfo(tempDir)
 	if err == nil {
 		t.Error("Expected error for directory path")
 	}
-	
+
 	// 边界情况3：权限不足的文件（如果可能）
 	restrictedFile := createTestPDFFile(t, tempDir, "restricted.pdf")
 	// 尝试修改文件权限（在支持的系统上）
 	os.Chmod(restrictedFile, 0000)
 	defer os.Chmod(restrictedFile, 0644) // 恢复权限以便清理
-	
+
 	_, err = service.GetPDFInfo(restrictedFile)
 	// 权限错误是可能的，但不是必须的（取决于系统）
 	if err != nil {
@@ -656,20 +672,20 @@ func TestPDFInfoExtraction_EdgeCases(t *testing.T) {
 // TestPDFInfoExtraction_PerformanceComparison 性能对比测试
 func TestPDFInfoExtraction_PerformanceComparison(t *testing.T) {
 	tempDir := createTempDir(t, "performance_comparison_test")
-	
+
 	// 创建多个测试文件
 	var testFiles []string
 	for i := 0; i < 10; i++ {
 		file := createTestPDFFile(t, tempDir, fmt.Sprintf("perf_test_%d.pdf", i))
 		testFiles = append(testFiles, file)
 	}
-	
+
 	service := NewPDFService()
-	
+
 	// 测量批量处理性能
 	start := time.Now()
 	var results []*PDFInfo
-	
+
 	for _, file := range testFiles {
 		info, err := service.GetPDFInfo(file)
 		if err != nil {
@@ -678,38 +694,38 @@ func TestPDFInfoExtraction_PerformanceComparison(t *testing.T) {
 		}
 		results = append(results, info)
 	}
-	
+
 	duration := time.Since(start)
 	avgTime := duration / time.Duration(len(testFiles))
-	
-	t.Logf("Processed %d files in %v (avg: %v per file)", 
+
+	t.Logf("Processed %d files in %v (avg: %v per file)",
 		len(testFiles), duration, avgTime)
-	
+
 	// 验证性能合理性
 	if avgTime > 1*time.Second {
 		t.Errorf("Average processing time too high: %v", avgTime)
 	}
-	
+
 	// 验证结果一致性
 	for i, info := range results {
 		if info == nil {
 			t.Errorf("Result %d is nil", i)
 			continue
 		}
-		
+
 		if !info.IsValid() {
 			t.Errorf("Result %d is invalid", i)
 		}
-		
+
 		// 所有测试文件应该有相同的基本属性
 		if i > 0 {
 			prev := results[i-1]
 			if info.PageCount != prev.PageCount {
-				t.Errorf("Page count mismatch: file %d has %d pages, file %d has %d pages", 
+				t.Errorf("Page count mismatch: file %d has %d pages, file %d has %d pages",
 					i-1, prev.PageCount, i, info.PageCount)
 			}
 			if info.Version != prev.Version {
-				t.Errorf("Version mismatch: file %d has version %s, file %d has version %s", 
+				t.Errorf("Version mismatch: file %d has version %s, file %d has version %s",
 					i-1, prev.Version, i, info.Version)
 			}
 		}

@@ -110,7 +110,7 @@ func (cm *ConfigManager) AddCommonPassword(password string) {
 			return
 		}
 	}
-	
+
 	cm.config.CommonPasswords = append(cm.config.CommonPasswords, password)
 }
 
@@ -149,17 +149,17 @@ func (cm *ConfigManager) mergeWithDefaults(config *Config) {
 	if config.OutputDirectory == "" {
 		config.OutputDirectory = defaults.OutputDirectory
 	}
-	
+
 	if len(config.CommonPasswords) == 0 {
 		config.CommonPasswords = defaults.CommonPasswords
 	}
-	
+
 	// 注意：我们不覆盖EnableAutoDecrypt的值，因为布尔值没有明确的"未设置"状态
-	
+
 	if config.WindowWidth <= 0 {
 		config.WindowWidth = defaults.WindowWidth
 	}
-	
+
 	if config.WindowHeight <= 0 {
 		config.WindowHeight = defaults.WindowHeight
 	}

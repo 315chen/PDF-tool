@@ -315,7 +315,7 @@ func TestOutputManager_ValidateOutputPath(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := manager.ValidateOutputPath(tc.path)
-			
+
 			if tc.expectError {
 				if err == nil {
 					t.Error("期望有错误但没有返回错误")

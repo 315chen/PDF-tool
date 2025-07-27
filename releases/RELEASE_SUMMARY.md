@@ -13,19 +13,27 @@
 
 ### ✅ 已完成的发布文件
 
+#### GUI版本 (需要图形界面)
 | 文件 | 大小 | 平台 | 状态 |
 |------|------|------|------|
 | `pdf-merger-macos-intel` | 19MB | macOS Intel | ✅ 已构建 |
-| `checksums.sha256` | 89B | 校验文件 | ✅ 已生成 |
-| `RELEASE_NOTES.md` | 1.9KB | 发布说明 | ✅ 已创建 |
+| `pdf-merger-macos-apple-silicon` | 19MB | macOS Apple Silicon | ✅ 已构建 |
 
-### 🔄 待完成的发布文件
-
-| 文件 | 平台 | 状态 | 备注 |
+#### CLI版本 (命令行界面，跨平台)
+| 文件 | 大小 | 平台 | 状态 |
 |------|------|------|------|
-| `pdf-merger-windows-64bit.exe` | Windows 64位 | ⏳ 待构建 | 需要Windows环境 |
-| `pdf-merger-linux-64bit` | Linux 64位 | ⏳ 待构建 | 需要Linux环境 |
-| `pdf-merger-macos-apple-silicon` | macOS M1/M2 | ⏳ 待构建 | 需要Apple Silicon Mac |
+| `pdf-merger-cli-windows-64bit.exe` | 2MB | Windows 64位 | ✅ 已构建 |
+| `pdf-merger-cli-windows-32bit.exe` | 1MB | Windows 32位 | ✅ 已构建 |
+| `pdf-merger-cli-linux-64bit` | 2MB | Linux 64位 | ✅ 已构建 |
+| `pdf-merger-cli-linux-arm64` | 2MB | Linux ARM64 | ✅ 已构建 |
+| `pdf-merger-cli-macos-intel` | 2MB | macOS Intel | ✅ 已构建 |
+| `pdf-merger-cli-macos-apple-silicon` | 2MB | macOS Apple Silicon | ✅ 已构建 |
+
+#### 其他文件
+| 文件 | 大小 | 类型 | 状态 |
+|------|------|------|------|
+| `checksums.sha256` | 1KB | 校验文件 | ✅ 已生成 |
+| `RELEASE_NOTES.md` | 1.9KB | 发布说明 | ✅ 已创建 |
 
 ## 📚 发布文档
 

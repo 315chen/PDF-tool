@@ -8,20 +8,19 @@ import (
 )
 
 // PDFDiagnosticReport PDF文件诊断报告
-//
 type PDFDiagnosticReport struct {
-	FilePath         string                 // 文件路径
-	Exists           bool                   // 文件是否存在
-	Size             int64                  // 文件大小
-	IsPDF            bool                   // 是否为PDF格式
-	Encrypted        bool                   // 是否加密
-	Permissions      string                 // 权限信息
-	PageCount        int                    // 页数
-	ValidationError  error                  // 格式/结构校验错误
-	Compatibility    string                 // 兼容性建议
-	PerformanceTips  []string               // 性能建议
-	Extra            map[string]interface{} // 其他信息
-	GeneratedAt      time.Time              // 诊断时间
+	FilePath        string                 // 文件路径
+	Exists          bool                   // 文件是否存在
+	Size            int64                  // 文件大小
+	IsPDF           bool                   // 是否为PDF格式
+	Encrypted       bool                   // 是否加密
+	Permissions     string                 // 权限信息
+	PageCount       int                    // 页数
+	ValidationError error                  // 格式/结构校验错误
+	Compatibility   string                 // 兼容性建议
+	PerformanceTips []string               // 性能建议
+	Extra           map[string]interface{} // 其他信息
+	GeneratedAt     time.Time              // 诊断时间
 }
 
 // DiagnosePDF 对单个PDF文件进行诊断
@@ -84,16 +83,15 @@ func DiagnosePDF(filePath string) *PDFDiagnosticReport {
 }
 
 // SystemDiagnosticReport 系统环境诊断报告
-//
 type SystemDiagnosticReport struct {
-	GoVersion      string
-	OS             string
-	Arch           string
-	NumCPU         int
-	PDFCPUPresent  bool
-	PDFCPUVersion  string
-	OtherChecks    map[string]interface{}
-	GeneratedAt    time.Time
+	GoVersion     string
+	OS            string
+	Arch          string
+	NumCPU        int
+	PDFCPUPresent bool
+	PDFCPUVersion string
+	OtherChecks   map[string]interface{}
+	GeneratedAt   time.Time
 }
 
 // DiagnoseSystem 检查系统环境
@@ -103,11 +101,11 @@ func DiagnoseSystem() *SystemDiagnosticReport {
 		OS:            runtime.GOOS,
 		Arch:          runtime.GOARCH,
 		NumCPU:        runtime.NumCPU(),
-		PDFCPUPresent: true, // 占位，实际可检测CLI或库
+		PDFCPUPresent: true,      // 占位，实际可检测CLI或库
 		PDFCPUVersion: "v0.11.0", // 可集成真实版本检测
 		OtherChecks:   make(map[string]interface{}),
 		GeneratedAt:   time.Now(),
 	}
 	// 可扩展更多依赖/环境检查
 	return report
-} 
+}

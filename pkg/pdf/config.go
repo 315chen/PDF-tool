@@ -7,13 +7,12 @@ import (
 )
 
 // PDFServiceConfig 全局功能开关与配置
-//
 type PDFServiceConfig struct {
-	UsePDFCPU      bool   `json:"use_pdfcpu"`      // 是否启用pdfcpu（否则用UniPDF）
-	EnableLogging  bool   `json:"enable_logging"`  // 是否启用详细日志
-	EnableMetrics  bool   `json:"enable_metrics"`  // 是否启用指标采集
-	EnableBackup   bool   `json:"enable_backup"`   // 是否启用写入备份
-	ConfigFilePath string `json:"-"`               // 配置文件路径（不序列化）
+	UsePDFCPU      bool   `json:"use_pdfcpu"`     // 是否启用pdfcpu（否则用UniPDF）
+	EnableLogging  bool   `json:"enable_logging"` // 是否启用详细日志
+	EnableMetrics  bool   `json:"enable_metrics"` // 是否启用指标采集
+	EnableBackup   bool   `json:"enable_backup"`  // 是否启用写入备份
+	ConfigFilePath string `json:"-"`              // 配置文件路径（不序列化）
 	mutex          sync.RWMutex
 }
 
@@ -78,4 +77,4 @@ var GlobalPDFServiceConfig = DefaultPDFServiceConfig()
 // InitConfigFromFile 初始化全局配置
 func InitConfigFromFile(path string) error {
 	return GlobalPDFServiceConfig.LoadConfig(path)
-} 
+}

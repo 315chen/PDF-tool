@@ -6,39 +6,39 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	
+
 	"github.com/user/pdf-merger/internal/controller"
 	"github.com/user/pdf-merger/internal/model"
 )
 
 // UI 定义用户界面组件
 type UI struct {
-	window              fyne.Window
-	controller          *controller.Controller
-	eventHandler        interface{} // 将在后续更新中使用具体类型
-	mainFileEntry       *widget.Entry
-	mainFileBrowseBtn   *widget.Button
-	fileListManager     *FileListManager
-	fileInfoLabel       *widget.Label
-	addFileBtn          *widget.Button
-	removeFileBtn       *widget.Button
-	clearFilesBtn       *widget.Button
-	moveUpBtn           *widget.Button
-	moveDownBtn         *widget.Button
-	refreshBtn          *widget.Button
-	outputPathEntry     *widget.Entry
-	outputBrowseBtn     *widget.Button
-	progressManager     *ProgressManager
-	mergeButton         *widget.Button
-	cancelButton        *widget.Button
-	
+	window            fyne.Window
+	controller        *controller.Controller
+	eventHandler      interface{} // 将在后续更新中使用具体类型
+	mainFileEntry     *widget.Entry
+	mainFileBrowseBtn *widget.Button
+	fileListManager   *FileListManager
+	fileInfoLabel     *widget.Label
+	addFileBtn        *widget.Button
+	removeFileBtn     *widget.Button
+	clearFilesBtn     *widget.Button
+	moveUpBtn         *widget.Button
+	moveDownBtn       *widget.Button
+	refreshBtn        *widget.Button
+	outputPathEntry   *widget.Entry
+	outputBrowseBtn   *widget.Button
+	progressManager   *ProgressManager
+	mergeButton       *widget.Button
+	cancelButton      *widget.Button
+
 	// 数据
 	mainFilePath string
 	outputPath   string
@@ -50,19 +50,19 @@ func NewUI(window fyne.Window, controller *controller.Controller) *UI {
 		window:     window,
 		controller: controller,
 	}
-	
+
 	// 创建文件列表管理器
 	ui.fileListManager = NewFileListManager()
-	
+
 	// 创建进度管理器
 	ui.progressManager = NewProgressManager(window)
-	
+
 	// 设置回调
 	ui.fileListManager.SetOnFileChanged(ui.onFileListChanged)
 	ui.fileListManager.SetOnFileInfo(ui.getFileInfo)
 	ui.progressManager.SetOnCancel(ui.onProgressCancel)
 	ui.progressManager.SetOnComplete(ui.onProgressComplete)
-	
+
 	return ui
 }
 
@@ -70,16 +70,16 @@ func NewUI(window fyne.Window, controller *controller.Controller) *UI {
 func (u *UI) BuildUI() fyne.CanvasObject {
 	// 创建主文件选择区域
 	mainFileSection := u.createMainFileSection()
-	
+
 	// 创建附加文件列表区域
 	additionalFilesSection := u.createAdditionalFilesSection()
-	
+
 	// 创建输出文件选择区域
 	outputSection := u.createOutputSection()
-	
+
 	// 创建进度和控制区域
 	controlSection := u.createControlSection()
-	
+
 	// 构建主布局
 	content := container.NewVBox(
 		mainFileSection,
@@ -90,10 +90,10 @@ func (u *UI) BuildUI() fyne.CanvasObject {
 		widget.NewSeparator(),
 		controlSection,
 	)
-	
+
 	// 设置初始状态
 	u.updateUI()
-	
+
 	return content
 }
 
@@ -103,13 +103,13 @@ func (u *UI) createMainFileSection() *fyne.Container {
 	u.mainFileEntry = widget.NewEntry()
 	u.mainFileEntry.SetPlaceHolder("请选择主PDF文件...")
 	u.mainFileEntry.Disable() // 只读，通过浏览按钮选择
-	
+
 	// 主文件浏览按钮
 	u.mainFileBrowseBtn = widget.NewButton(BrowseButton, u.onMainFileBrowse)
-	
+
 	// 布局
 	fileRow := container.NewBorder(nil, nil, nil, u.mainFileBrowseBtn, u.mainFileEntry)
-	
+
 	return container.NewVBox(
 		widget.NewRichTextFromMarkdown("## 主PDF文件"),
 		fileRow,
@@ -131,25 +131,25 @@ func (u *UI) createAdditionalFilesSection() *fyne.Container {
 	u.moveUpBtn = widget.NewButtonWithIcon(MoveUpButton, theme.MoveUpIcon(), u.onMoveUp)
 	u.moveDownBtn = widget.NewButtonWithIcon(MoveDownButton, theme.MoveDownIcon(), u.onMoveDown)
 	u.refreshBtn = widget.NewButtonWithIcon(RefreshButton, theme.ViewRefreshIcon(), u.onRefreshFiles)
-	
+
 	// 按钮行
 	mainButtonRow := container.NewHBox(
 		u.addFileBtn,
 		u.removeFileBtn,
 		u.clearFilesBtn,
 	)
-	
+
 	sortButtonRow := container.NewHBox(
 		u.moveUpBtn,
 		u.moveDownBtn,
 		u.refreshBtn,
 	)
-	
+
 	buttonContainer := container.NewVBox(
 		mainButtonRow,
 		sortButtonRow,
 	)
-	
+
 	// 文件列表容器
 	listWidget := u.fileListManager.GetWidget()
 	listContainer := container.NewBorder(
@@ -158,7 +158,7 @@ func (u *UI) createAdditionalFilesSection() *fyne.Container {
 		nil, nil,
 		listWidget,
 	)
-	
+
 	return container.NewVBox(
 		widget.NewRichTextFromMarkdown("## 附加PDF文件"),
 		listContainer,
@@ -174,13 +174,13 @@ func (u *UI) createOutputSection() *fyne.Container {
 		u.outputPath = text
 		u.updateUI()
 	}
-	
+
 	// 输出路径浏览按钮
 	u.outputBrowseBtn = widget.NewButton(BrowseButton, u.onOutputBrowse)
-	
+
 	// 布局
 	outputRow := container.NewBorder(nil, nil, nil, u.outputBrowseBtn, u.outputPathEntry)
-	
+
 	return container.NewVBox(
 		widget.NewRichTextFromMarkdown("## 输出文件"),
 		outputRow,
@@ -193,15 +193,15 @@ func (u *UI) createControlSection() *fyne.Container {
 	u.mergeButton = widget.NewButtonWithIcon(StartMergeButton, theme.MediaPlayIcon(), u.onMerge)
 	u.cancelButton = widget.NewButtonWithIcon(CancelButton, theme.CancelIcon(), u.onCancel)
 	u.cancelButton.Hide() // 初始隐藏
-	
+
 	buttonRow := container.NewHBox(
 		u.mergeButton,
 		u.cancelButton,
 	)
-	
+
 	// 获取进度管理器容器
 	progressContainer := u.progressManager.GetContainer()
-	
+
 	return container.NewVBox(
 		progressContainer,
 		buttonRow,
@@ -221,24 +221,24 @@ func (u *UI) onMainFileBrowse() {
 			return
 		}
 		defer reader.Close()
-		
+
 		uri := reader.URI()
 		if uri == nil {
 			return
 		}
-		
+
 		path := uri.Path()
 		if !strings.HasSuffix(strings.ToLower(path), ".pdf") {
 			dialog.ShowError(fmt.Errorf("请选择PDF文件"), u.window)
 			return
 		}
-		
+
 		u.mainFilePath = path
 		u.mainFileEntry.SetText(filepath.Base(path))
 		u.updateUI()
-		
+
 	}, u.window)
-	
+
 	// 设置文件过滤器
 	fileDialog.SetFilter(storage.NewExtensionFileFilter([]string{".pdf"}))
 	fileDialog.Show()
@@ -255,26 +255,26 @@ func (u *UI) onAddFiles() {
 			return
 		}
 		defer reader.Close()
-		
+
 		uri := reader.URI()
 		if uri == nil {
 			return
 		}
-		
+
 		path := uri.Path()
 		if !strings.HasSuffix(strings.ToLower(path), ".pdf") {
 			dialog.ShowError(fmt.Errorf("请选择PDF文件"), u.window)
 			return
 		}
-		
+
 		// 添加到文件列表管理器
 		if err := u.fileListManager.AddFile(path); err != nil {
 			dialog.ShowError(err, u.window)
 			return
 		}
-		
+
 	}, u.window)
-	
+
 	fileDialog.SetFilter(storage.NewExtensionFileFilter([]string{".pdf"}))
 	fileDialog.Show()
 }
@@ -285,12 +285,12 @@ func (u *UI) onRemoveSelected() {
 		dialog.ShowInformation("提示", "没有文件可以移除", u.window)
 		return
 	}
-	
+
 	if u.fileListManager.GetSelectedIndex() < 0 {
 		dialog.ShowInformation("提示", "请先选择要移除的文件", u.window)
 		return
 	}
-	
+
 	u.fileListManager.RemoveSelected()
 }
 
@@ -299,7 +299,7 @@ func (u *UI) onClearFiles() {
 	if !u.fileListManager.HasFiles() {
 		return
 	}
-	
+
 	dialog.ShowConfirm("确认", "确定要清空所有附加文件吗？", func(confirmed bool) {
 		if confirmed {
 			u.fileListManager.Clear()
@@ -318,23 +318,23 @@ func (u *UI) onOutputBrowse() {
 			return
 		}
 		defer writer.Close()
-		
+
 		uri := writer.URI()
 		if uri == nil {
 			return
 		}
-		
+
 		path := uri.Path()
 		if !strings.HasSuffix(strings.ToLower(path), ".pdf") {
 			path += ".pdf"
 		}
-		
+
 		u.outputPath = path
 		u.outputPathEntry.SetText(path)
 		u.updateUI()
-		
+
 	}, u.window)
-	
+
 	fileDialog.SetFileName("merged.pdf")
 	fileDialog.SetFilter(storage.NewExtensionFileFilter([]string{".pdf"}))
 	fileDialog.Show()
@@ -346,45 +346,45 @@ func (u *UI) onMerge() {
 	if u.eventHandler != nil {
 		// 这里需要类型断言，但为了保持兼容性，先使用原有逻辑
 		additionalFiles := u.fileListManager.GetFilePaths()
-		
+
 		// 基本验证
 		if u.mainFilePath == "" {
 			dialog.ShowError(fmt.Errorf("请选择主PDF文件"), u.window)
 			return
 		}
-		
+
 		if len(additionalFiles) == 0 {
 			dialog.ShowError(fmt.Errorf("请至少添加一个附加PDF文件"), u.window)
 			return
 		}
-		
+
 		if u.outputPath == "" {
 			dialog.ShowError(fmt.Errorf("请选择输出文件路径"), u.window)
 			return
 		}
-		
+
 		// 开始异步合并
 		u.startAsyncMerge()
 		return
 	}
-	
+
 	// 原有的同步合并逻辑（向后兼容）
 	// 验证输入
 	if u.mainFilePath == "" {
 		dialog.ShowError(fmt.Errorf("请选择主PDF文件"), u.window)
 		return
 	}
-	
+
 	if !u.fileListManager.HasFiles() {
 		dialog.ShowError(fmt.Errorf("请至少添加一个附加PDF文件"), u.window)
 		return
 	}
-	
+
 	if u.outputPath == "" {
 		dialog.ShowError(fmt.Errorf("请选择输出文件路径"), u.window)
 		return
 	}
-	
+
 	// 开始合并
 	u.startMerge()
 }
@@ -425,12 +425,12 @@ func (u *UI) getFileInfo(filePath string) (*model.FileEntry, error) {
 		DisplayName: filepath.Base(filePath),
 		IsValid:     true,
 	}
-	
+
 	// 获取文件大小
 	if fileInfo, err := os.Stat(filePath); err == nil {
 		fileEntry.Size = fileInfo.Size()
 	}
-	
+
 	// 获取PDF信息
 	if u.controller != nil {
 		if pdfInfo, err := u.controller.GetPDFInfo(filePath); err == nil {
@@ -441,7 +441,7 @@ func (u *UI) getFileInfo(filePath string) (*model.FileEntry, error) {
 			fileEntry.Error = err.Error()
 		}
 	}
-	
+
 	return fileEntry, nil
 }
 
@@ -474,7 +474,7 @@ func (u *UI) enableInputControls() {
 	u.moveDownBtn.Enable()
 	u.refreshBtn.Enable()
 	u.outputBrowseBtn.Enable()
-	
+
 	// 重新应用按钮状态逻辑
 	u.updateUI()
 }
@@ -487,7 +487,7 @@ func (u *UI) performMerge() {
 		u.cancelButton.Hide()
 		u.enableInputControls()
 	}()
-	
+
 	// 步骤1: 验证文件
 	u.progressManager.UpdateProgress(ProgressInfo{
 		Progress: 0.1,
@@ -495,11 +495,11 @@ func (u *UI) performMerge() {
 		Detail:   "正在验证PDF文件...",
 		Step:     1,
 	})
-	
+
 	if !u.validateFiles() {
 		return
 	}
-	
+
 	// 步骤2: 准备合并
 	u.progressManager.UpdateProgress(ProgressInfo{
 		Progress: 0.3,
@@ -507,7 +507,7 @@ func (u *UI) performMerge() {
 		Detail:   "正在准备合并操作...",
 		Step:     2,
 	})
-	
+
 	// 步骤3: 执行合并
 	u.progressManager.UpdateProgress(ProgressInfo{
 		Progress: 0.5,
@@ -515,11 +515,11 @@ func (u *UI) performMerge() {
 		Detail:   "正在合并PDF文件...",
 		Step:     3,
 	})
-	
+
 	if !u.executeMerge() {
 		return
 	}
-	
+
 	// 步骤4: 保存文件
 	u.progressManager.UpdateProgress(ProgressInfo{
 		Progress: 0.8,
@@ -527,7 +527,7 @@ func (u *UI) performMerge() {
 		Detail:   "正在保存合并后的文件...",
 		Step:     4,
 	})
-	
+
 	// 步骤5: 完成
 	u.progressManager.UpdateProgress(ProgressInfo{
 		Progress: 1.0,
@@ -535,7 +535,7 @@ func (u *UI) performMerge() {
 		Detail:   "合并操作已完成",
 		Step:     5,
 	})
-	
+
 	u.progressManager.Complete("PDF合并完成！")
 }
 
@@ -546,7 +546,7 @@ func (u *UI) validateFiles() bool {
 		u.progressManager.Error(fmt.Errorf("主文件验证失败: %v", err))
 		return false
 	}
-	
+
 	// 验证附加文件
 	additionalFiles := u.fileListManager.GetFilePaths()
 	for i, filePath := range additionalFiles {
@@ -556,46 +556,46 @@ func (u *UI) validateFiles() bool {
 			ProcessedFiles: i,
 			TotalFiles:     len(additionalFiles),
 		})
-		
+
 		if err := u.controller.ValidateFile(filePath); err != nil {
 			u.progressManager.Error(fmt.Errorf("文件 %s 验证失败: %v", filepath.Base(filePath), err))
 			return false
 		}
 	}
-	
+
 	return true
 }
 
 // executeMerge 执行合并
 func (u *UI) executeMerge() bool {
 	additionalFiles := u.fileListManager.GetFilePaths()
-	
+
 	// 模拟合并过程
 	for i := 0; i < len(additionalFiles)+1; i++ {
 		if !u.progressManager.IsActive() {
 			return false // 用户取消了操作
 		}
-		
+
 		progress := 0.5 + (0.3 * float64(i) / float64(len(additionalFiles)+1))
-		
+
 		var currentFile string
 		if i == 0 {
 			currentFile = filepath.Base(u.mainFilePath)
 		} else {
 			currentFile = filepath.Base(additionalFiles[i-1])
 		}
-		
+
 		u.progressManager.UpdateProgress(ProgressInfo{
 			Progress:       progress,
 			CurrentFile:    currentFile,
 			ProcessedFiles: i,
 			TotalFiles:     len(additionalFiles) + 1,
 		})
-		
+
 		// 模拟处理时间
 		time.Sleep(500 * time.Millisecond)
 	}
-	
+
 	// 实际的合并逻辑
 	if u.controller != nil {
 		err := u.controller.MergePDFs(u.mainFilePath, additionalFiles, u.outputPath)
@@ -604,7 +604,7 @@ func (u *UI) executeMerge() bool {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -624,17 +624,17 @@ func (u *UI) startMerge() {
 	// 更新UI状态
 	u.mergeButton.Hide()
 	u.cancelButton.Show()
-	
+
 	// 禁用输入控件
 	u.disableInputControls()
-	
+
 	// 获取文件信息
 	additionalFiles := u.fileListManager.GetFilePaths()
 	totalFiles := len(additionalFiles) + 1 // 包括主文件
-	
+
 	// 启动进度显示
 	u.progressManager.Start(5, totalFiles) // 5个主要步骤
-	
+
 	// 异步执行合并操作
 	go u.performMerge()
 }
@@ -644,17 +644,17 @@ func (u *UI) startAsyncMerge() {
 	// 更新UI状态
 	u.mergeButton.Hide()
 	u.cancelButton.Show()
-	
+
 	// 禁用输入控件
 	u.disableInputControls()
-	
+
 	// 获取文件信息
 	additionalFiles := u.fileListManager.GetFilePaths()
 	totalFiles := len(additionalFiles) + 1 // 包括主文件
-	
+
 	// 启动进度显示
 	u.progressManager.Start(5, totalFiles) // 5个主要步骤
-	
+
 	// 通过控制器开始异步合并
 	if u.controller != nil {
 		err := u.controller.StartMergeJob(u.mainFilePath, additionalFiles, u.outputPath)
@@ -671,14 +671,14 @@ func (u *UI) cancelAsyncMerge() {
 	if u.controller != nil {
 		u.controller.CancelCurrentJob()
 	}
-	
+
 	// 取消进度管理器
 	u.progressManager.Cancel()
-	
+
 	// 恢复UI状态
 	u.mergeButton.Show()
 	u.cancelButton.Hide()
-	
+
 	// 启用输入控件
 	u.enableInputControls()
 }
@@ -690,15 +690,15 @@ func (u *UI) cancelMerge() {
 		u.cancelAsyncMerge()
 		return
 	}
-	
+
 	// 原有的同步取消逻辑
 	// 取消进度管理器
 	u.progressManager.Cancel()
-	
+
 	// 恢复UI状态
 	u.mergeButton.Show()
 	u.cancelButton.Hide()
-	
+
 	// 启用输入控件
 	u.enableInputControls()
 }
@@ -707,7 +707,7 @@ func (u *UI) cancelMerge() {
 func (u *UI) updateUI() {
 	// 更新按钮状态
 	canMerge := u.mainFilePath != "" && u.fileListManager.HasFiles() && u.outputPath != ""
-	
+
 	if u.mergeButton.Visible() {
 		if canMerge {
 			u.mergeButton.Enable()
@@ -715,17 +715,17 @@ func (u *UI) updateUI() {
 			u.mergeButton.Disable()
 		}
 	}
-	
+
 	// 更新文件操作按钮状态
 	hasFiles := u.fileListManager.HasFiles()
 	hasSelection := u.fileListManager.GetSelectedIndex() >= 0
-	
+
 	if hasFiles {
 		u.clearFilesBtn.Enable()
 	} else {
 		u.clearFilesBtn.Disable()
 	}
-	
+
 	if hasSelection {
 		u.removeFileBtn.Enable()
 		u.moveUpBtn.Enable()
@@ -735,7 +735,7 @@ func (u *UI) updateUI() {
 		u.moveUpBtn.Disable()
 		u.moveDownBtn.Disable()
 	}
-	
+
 	if hasFiles {
 		u.refreshBtn.Enable()
 	} else {

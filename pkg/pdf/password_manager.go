@@ -19,10 +19,10 @@ type PasswordManager struct {
 	commonPasswords []string          // 常用密码字典
 	passwordStats   map[string]int    // 密码使用统计
 	mutex           sync.RWMutex
-	cacheFile       string            // 缓存文件路径
-	statsFile       string            // 统计文件路径
-	enableCache     bool              // 是否启用缓存
-	enableStats     bool              // 是否启用统计
+	cacheFile       string // 缓存文件路径
+	statsFile       string // 统计文件路径
+	enableCache     bool   // 是否启用缓存
+	enableStats     bool   // 是否启用统计
 }
 
 // PasswordManagerOptions 密码管理器选项
@@ -35,18 +35,18 @@ type PasswordManagerOptions struct {
 
 // PasswordStrength 密码强度
 type PasswordStrength struct {
-	Score       int    // 强度分数 (0-100)
-	Level       string // 强度等级 (weak/medium/strong)
+	Score       int      // 强度分数 (0-100)
+	Level       string   // 强度等级 (weak/medium/strong)
 	Suggestions []string // 改进建议
 }
 
 // PasswordStats 密码统计信息
 type PasswordStats struct {
-	TotalAttempts    int                    // 总尝试次数
-	SuccessCount      int                    // 成功次数
-	SuccessRate       float64               // 成功率
-	MostUsedPasswords map[string]int        // 最常用密码
-	FileStats         map[string]FileStats  // 文件统计
+	TotalAttempts     int                  // 总尝试次数
+	SuccessCount      int                  // 成功次数
+	SuccessRate       float64              // 成功率
+	MostUsedPasswords map[string]int       // 最常用密码
+	FileStats         map[string]FileStats // 文件统计
 }
 
 // FileStats 文件统计信息
@@ -358,9 +358,9 @@ func (pm *PasswordManager) GetPasswordStats() *PasswordStats {
 }
 
 // BatchTryPasswords 批量尝试密码
-func (pm *PasswordManager) BatchTryPasswords(filePath string, passwords []string, 
+func (pm *PasswordManager) BatchTryPasswords(filePath string, passwords []string,
 	decryptFunc func(string, string) (string, error)) (string, string, error) {
-	
+
 	// 首先检查缓存
 	if cachedPassword, exists := pm.GetPassword(filePath); exists {
 		if _, err := decryptFunc(filePath, cachedPassword); err == nil {

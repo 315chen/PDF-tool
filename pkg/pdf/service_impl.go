@@ -25,20 +25,20 @@ func init() {
 
 // PDFServiceImpl 实现PDFService接口
 type PDFServiceImpl struct {
-	validator     *PDFValidator
-	errorHandler  ErrorHandler
-	mutex         sync.Mutex
-	config        *ServiceConfig
+	validator    *PDFValidator
+	errorHandler ErrorHandler
+	mutex        sync.Mutex
+	config       *ServiceConfig
 }
 
 // ServiceConfig PDF服务配置
 type ServiceConfig struct {
-	MaxRetries        int
-	RetryDelay        time.Duration
-	EnableStrictMode  bool
-	PreferPDFCPU      bool
-	TempDirectory     string
-	MaxMemoryUsage    int64
+	MaxRetries       int
+	RetryDelay       time.Duration
+	EnableStrictMode bool
+	PreferPDFCPU     bool
+	TempDirectory    string
+	MaxMemoryUsage   int64
 }
 
 // NewPDFService 创建一个新的PDF服务实例
@@ -373,7 +373,7 @@ func (s *PDFServiceImpl) checkEncryptionByContent(filePath string) (bool, error)
 	}
 
 	content := string(buffer[:n])
-	
+
 	// 查找加密相关的关键字
 	encryptionKeywords := []string{
 		"/Encrypt",
@@ -641,7 +641,7 @@ func (s *PDFServiceImpl) mergeWithPDFCPU(files []string, outputPath string, prog
 	// 输出统计信息
 	if progressWriter != nil {
 		if info, err := adapter.GetFileInfo(outputPath); err == nil {
-			fmt.Fprintf(progressWriter, "合并完成 - 总页数: %d, 文件大小: %s\n", 
+			fmt.Fprintf(progressWriter, "合并完成 - 总页数: %d, 文件大小: %s\n",
 				info.PageCount, info.GetFormattedSize())
 		}
 	}
@@ -948,26 +948,26 @@ func (s *PDFServiceImpl) validateWithEnhancedReader(filePath string) error {
 func (s *PDFServiceImpl) validateOutputFile(filePath string) error {
 	// 使用独立的验证方法，避免死锁
 	// 只进行基本的文件验证，不调用需要全局锁的ValidatePDF方法
-	
+
 	// 检查文件是否存在
 	if _, err := os.Stat(filePath); err != nil {
 		return fmt.Errorf("输出文件不存在: %w", err)
 	}
-	
+
 	// 检查文件大小
 	if fileInfo, err := os.Stat(filePath); err == nil {
 		if fileInfo.Size() == 0 {
 			return fmt.Errorf("输出文件为空")
 		}
 	}
-	
+
 	// 使用pdfcpu进行快速验证（不依赖全局锁）
 	adapter, err := NewPDFCPUAdapter(nil)
 	if err != nil {
 		return err // pdfcpu不可用，跳过验证
 	}
 	defer adapter.Close()
-	
+
 	return adapter.ValidateFile(filePath)
 }
 

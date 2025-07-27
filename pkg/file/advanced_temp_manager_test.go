@@ -48,7 +48,7 @@ func TestAdvancedTempManager_CreateTempFileWithContentAndTags(t *testing.T) {
 
 	content := []byte("test content for PDF file")
 	tags := []string{"content", "test"}
-	
+
 	filePath, err := atm.CreateTempFileWithContentAndTags("content_", ".pdf", content, tags)
 	if err != nil {
 		t.Fatalf("Failed to create temp file with content and tags: %v", err)
@@ -151,7 +151,7 @@ func TestAdvancedTempManager_RemoveFileAdvanced(t *testing.T) {
 
 	content := []byte("test content")
 	tags := []string{"test", "remove"}
-	
+
 	filePath, err := atm.CreateTempFileWithContentAndTags("remove_", ".txt", content, tags)
 	if err != nil {
 		t.Fatalf("Failed to create file: %v", err)

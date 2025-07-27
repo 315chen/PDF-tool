@@ -177,10 +177,10 @@ func TestProgressTracker_AddCallback(t *testing.T) {
 
 func TestProgressTracker_ElapsedTime(t *testing.T) {
 	tracker := NewProgressTracker(1)
-	
+
 	// 等待一小段时间
 	time.Sleep(10 * time.Millisecond)
-	
+
 	info := tracker.GetProgress()
 	if info.ElapsedTime < 10*time.Millisecond {
 		t.Errorf("Expected ElapsedTime >= 10ms, got %v", info.ElapsedTime)

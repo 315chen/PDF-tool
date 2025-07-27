@@ -97,7 +97,7 @@ func (rm *ResourceManager) Cleanup() []error {
 	// 按优先级排序资源
 	resources := make([]Resource, len(rm.resources))
 	copy(resources, rm.resources)
-	
+
 	// 按优先级从高到低排序
 	for i := 0; i < len(resources); i++ {
 		for j := i + 1; j < len(resources); j++ {

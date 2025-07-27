@@ -33,7 +33,7 @@ func SetupMigrationTest(t *testing.T) *MigrationTestSuite {
 
 	// 创建服务实例
 	unipdfService := NewPDFService()
-	
+
 	pdfcpuAdapter, err := NewPDFCPUAdapter(nil)
 	require.NoError(t, err)
 
@@ -69,10 +69,10 @@ func TestPDFServiceCompatibility(t *testing.T) {
 			t.Run(filepath.Base(testFile), func(t *testing.T) {
 				// 测试UniPDF实现
 				unipdfErr := suite.unipdfService.ValidatePDF(testFile)
-				
+
 				// 测试pdfcpu实现
 				pdfcpuErr := suite.pdfcpuAdapter.ValidateFile(testFile)
-				
+
 				// 比较结果（目前允许不同的错误消息，但错误状态应该一致）
 				if unipdfErr == nil {
 					// 如果UniPDF验证成功，pdfcpu也应该成功（或者至少不应该有致命错误）
@@ -90,19 +90,19 @@ func TestPDFServiceCompatibility(t *testing.T) {
 			t.Run(filepath.Base(testFile), func(t *testing.T) {
 				// 测试UniPDF实现
 				unipdfInfo, unipdfErr := suite.unipdfService.GetPDFInfo(testFile)
-				
+
 				// 测试pdfcpu实现
 				pdfcpuInfo, pdfcpuErr := suite.pdfcpuAdapter.GetFileInfo(testFile)
-				
+
 				// 比较结果
 				if unipdfErr == nil && pdfcpuErr == nil {
 					// 比较基本信息
 					assert.Equal(t, unipdfInfo.FileSize, pdfcpuInfo.FileSize)
-					
+
 					// 记录详细信息用于比较
-					t.Logf("UniPDF Info: Pages=%d, Encrypted=%t, Title=%s", 
+					t.Logf("UniPDF Info: Pages=%d, Encrypted=%t, Title=%s",
 						unipdfInfo.PageCount, unipdfInfo.IsEncrypted, unipdfInfo.Title)
-					t.Logf("pdfcpu Info: Pages=%d, Encrypted=%t, Title=%s", 
+					t.Logf("pdfcpu Info: Pages=%d, Encrypted=%t, Title=%s",
 						pdfcpuInfo.PageCount, pdfcpuInfo.IsEncrypted, pdfcpuInfo.Title)
 				} else {
 					t.Logf("UniPDF GetInfo: %v, pdfcpu GetInfo: %v", unipdfErr, pdfcpuErr)
@@ -191,14 +191,14 @@ func TestOutputComparison(t *testing.T) {
 			t.Logf("合并操作失败（可能是由于测试文件无效）:")
 			t.Logf("  UniPDF错误: %v", unipdfErr)
 			t.Logf("  pdfcpu错误: %v", pdfcpuErr)
-			
+
 			// 检查输出文件是否存在
 			if info, err := os.Stat(unipdfOutput); err == nil {
 				t.Logf("UniPDF输出文件存在，大小: %d bytes", info.Size())
 			} else {
 				t.Logf("UniPDF输出文件不存在: %v", err)
 			}
-			
+
 			if info, err := os.Stat(pdfcpuOutput); err == nil {
 				t.Logf("pdfcpu输出文件存在，大小: %d bytes", info.Size())
 			} else {
@@ -275,7 +275,7 @@ func TestMemoryUsage(t *testing.T) {
 		runtime.ReadMemStats(&m1)
 
 		err := suite.unipdfService.ValidatePDF(largeTestFile)
-		
+
 		runtime.GC()
 		runtime.ReadMemStats(&m2)
 		unipdfMemory := m2.Alloc - m1.Alloc
@@ -285,7 +285,7 @@ func TestMemoryUsage(t *testing.T) {
 		runtime.ReadMemStats(&m1)
 
 		err2 := suite.pdfcpuAdapter.ValidateFile(largeTestFile)
-		
+
 		runtime.GC()
 		runtime.ReadMemStats(&m2)
 		pdfcpuMemory := m2.Alloc - m1.Alloc
@@ -319,7 +319,7 @@ func TestErrorHandling(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// 测试UniPDF错误处理
 			unipdfErr := suite.unipdfService.ValidatePDF(tc.filePath)
-			
+
 			// 测试pdfcpu错误处理
 			pdfcpuErr := suite.pdfcpuAdapter.ValidateFile(tc.filePath)
 
@@ -376,7 +376,7 @@ func createTestPDFFiles(t testing.TB, tempDir string) []string {
 	if len(files) > 0 {
 		return files
 	}
-	
+
 	// 如果pdfcpu不可用，回退到手动创建
 	t.Logf("pdfcpu CLI不可用，使用手动创建的测试文件")
 	return createManualTestPDFs(t, tempDir)
@@ -391,18 +391,18 @@ func createValidTestPDFsWithPDFCPU(t testing.TB, tempDir string) []string {
 		return nil
 	}
 	defer cliAdapter.Close()
-	
+
 	if !cliAdapter.IsAvailable() {
 		t.Logf("pdfcpu CLI不可用")
 		return nil
 	}
-	
+
 	files := []string{
 		filepath.Join(tempDir, "test1.pdf"),
 		filepath.Join(tempDir, "test2.pdf"),
 		filepath.Join(tempDir, "test3.pdf"),
 	}
-	
+
 	for i, file := range files {
 		// 使用pdfcpu创建测试PDF文件
 		err := cliAdapter.CreateTestPDF(file, i+1)
@@ -410,7 +410,7 @@ func createValidTestPDFsWithPDFCPU(t testing.TB, tempDir string) []string {
 			t.Logf("Warning: failed to create test file %s with pdfcpu: %v", file, err)
 			continue
 		}
-		
+
 		// 验证文件大小
 		if info, err := os.Stat(file); err == nil {
 			if info.Size() < 100 {
@@ -418,7 +418,7 @@ func createValidTestPDFsWithPDFCPU(t testing.TB, tempDir string) []string {
 			}
 		}
 	}
-	
+
 	return files
 }
 
@@ -438,7 +438,7 @@ func createManualTestPDFs(t testing.TB, tempDir string) []string {
 			t.Logf("Warning: failed to create test file %s: %v", file, err)
 			continue
 		}
-		
+
 		// 验证文件大小
 		if info, err := os.Stat(file); err == nil {
 			if info.Size() < 100 {
@@ -507,7 +507,7 @@ trailer
 startxref
 300
 %%EOF`
-	
+
 	return content
 }
 
@@ -515,19 +515,19 @@ startxref
 func createLargeTestFile(t *testing.T, tempDir string) string {
 	// 创建一个相对较大的测试文件
 	filePath := filepath.Join(tempDir, "large_test.pdf")
-	
+
 	// 简单的PDF内容，重复多次以增加文件大小
 	baseContent := "%PDF-1.4\n%âãÏÓ\n"
 	for i := 0; i < 1000; i++ {
 		baseContent += fmt.Sprintf("%d 0 obj\n<<\n/Type /Test\n/Index %d\n>>\nendobj\n", i+1, i)
 	}
-	
+
 	err := os.WriteFile(filePath, []byte(baseContent), 0644)
 	if err != nil {
 		t.Logf("Warning: failed to create large test file: %v", err)
 		return ""
 	}
-	
+
 	return filePath
 }
 

@@ -9,14 +9,14 @@ import (
 
 // MockEncryptionHandler 模拟加密处理器用于测试
 type MockEncryptionHandler struct {
-	passwords map[string]string
+	passwords       map[string]string
 	commonPasswords []string
-	mutex sync.RWMutex
+	mutex           sync.RWMutex
 }
 
 func NewMockEncryptionHandler() *MockEncryptionHandler {
 	return &MockEncryptionHandler{
-		passwords: make(map[string]string),
+		passwords:       make(map[string]string),
 		commonPasswords: []string{"", "123456", "password", "admin", "user"},
 	}
 }

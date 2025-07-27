@@ -6,8 +6,8 @@ import (
 
 // FileValidator 集成文件验证功能
 type FileValidator struct {
-	fileManager   FileManager
-	pdfValidator  *pdf.PDFValidator
+	fileManager  FileManager
+	pdfValidator *pdf.PDFValidator
 }
 
 // NewFileValidator 创建一个新的文件验证器

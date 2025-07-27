@@ -199,15 +199,3 @@ func BenchmarkMockDataGenerator_GenerateFileEntries(b *testing.B) {
 		generator.GenerateFileEntries(10)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-

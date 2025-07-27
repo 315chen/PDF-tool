@@ -243,17 +243,17 @@ func TestFileList_Clear(t *testing.T) {
 
 func TestFileList_GetValidFiles(t *testing.T) {
 	fl := NewFileList()
-	
+
 	// 设置主文件
 	mainFile := fl.SetMainFile("/main.pdf")
-	
+
 	// 添加有效和无效的文件
 	validFile := fl.AddFile("/valid.pdf")
 	invalidFile := fl.AddFile("/invalid.pdf")
 	invalidFile.SetError("Test error")
 
 	validFiles := fl.GetValidFiles()
-	
+
 	// 应该包含主文件和有效的附加文件
 	expectedCount := 2
 	if len(validFiles) != expectedCount {
@@ -263,7 +263,7 @@ func TestFileList_GetValidFiles(t *testing.T) {
 	// 检查返回的文件是否正确
 	foundMain := false
 	foundValid := false
-	
+
 	for _, file := range validFiles {
 		if file == mainFile {
 			foundMain = true

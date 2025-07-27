@@ -168,11 +168,11 @@ func (h *DefaultErrorHandler) HandleError(err error) error {
 	if err == nil {
 		return nil
 	}
-	
+
 	if pdfErr, ok := err.(*PDFError); ok {
 		return pdfErr
 	}
-	
+
 	// 将普通错误转换为PDFError
 	return NewPDFError(ErrorIO, err.Error(), "", err)
 }
@@ -232,14 +232,14 @@ func (ec *ErrorCollector) GetSummary() string {
 	if !ec.HasErrors() {
 		return "没有错误"
 	}
-	
+
 	var summary strings.Builder
 	summary.WriteString(fmt.Sprintf("共发现 %d 个错误:\n", len(ec.errors)))
-	
+
 	for i, err := range ec.errors {
 		summary.WriteString(fmt.Sprintf("%d. %s\n", i+1, err.Error()))
 	}
-	
+
 	return summary.String()
 }
 

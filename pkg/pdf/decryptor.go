@@ -12,33 +12,33 @@ import (
 
 // PDFDecryptor 提供PDF文件解密功能
 type PDFDecryptor struct {
-	tempDir           string
-	commonPasswords   []string
-	maxAttempts       int
-	attemptDelay      time.Duration
-	tempFiles         []string
-	mutex             sync.Mutex
-	progressCallback  func(current, total int, password string)
-	adapter           *PDFCPUAdapter // 新增pdfcpu适配器
+	tempDir          string
+	commonPasswords  []string
+	maxAttempts      int
+	attemptDelay     time.Duration
+	tempFiles        []string
+	mutex            sync.Mutex
+	progressCallback func(current, total int, password string)
+	adapter          *PDFCPUAdapter // 新增pdfcpu适配器
 }
 
 // DecryptorOptions 解密器选项
 type DecryptorOptions struct {
-	TempDirectory     string        // 临时文件目录
-	CommonPasswords   []string      // 常用密码列表
-	MaxAttempts       int           // 最大尝试次数
-	AttemptDelay      time.Duration // 尝试间隔
-	ProgressCallback  func(current, total int, password string) // 进度回调
+	TempDirectory    string                                    // 临时文件目录
+	CommonPasswords  []string                                  // 常用密码列表
+	MaxAttempts      int                                       // 最大尝试次数
+	AttemptDelay     time.Duration                             // 尝试间隔
+	ProgressCallback func(current, total int, password string) // 进度回调
 }
 
 // DecryptResult 解密结果
 type DecryptResult struct {
-	Success         bool
-	DecryptedPath   string
-	UsedPassword    string
-	AttemptCount    int
-	ProcessingTime  time.Duration
-	IsOriginalFile  bool // 是否为原始文件（未加密）
+	Success        bool
+	DecryptedPath  string
+	UsedPassword   string
+	AttemptCount   int
+	ProcessingTime time.Duration
+	IsOriginalFile bool // 是否为原始文件（未加密）
 }
 
 // NewPDFDecryptor 创建一个新的PDF解密器
@@ -255,7 +255,7 @@ func (d *PDFDecryptor) AutoDecrypt(filePath string) (*DecryptResult, error) {
 			result.DecryptedPath = decryptedPath
 			result.UsedPassword = password
 			result.ProcessingTime = time.Since(startTime)
-			
+
 			// 记录临时文件以便后续清理
 			d.addTempFile(decryptedPath)
 			return result, nil
@@ -325,7 +325,7 @@ func (d *PDFDecryptor) TryDecryptWithPasswords(filePath string, passwords []stri
 			result.DecryptedPath = decryptedPath
 			result.UsedPassword = password
 			result.ProcessingTime = time.Since(startTime)
-			
+
 			// 记录临时文件以便后续清理
 			d.addTempFile(decryptedPath)
 			return result, nil
@@ -361,11 +361,11 @@ func (d *PDFDecryptor) TryDecryptPDF(filePath string, passwords []string) (strin
 	if err != nil {
 		return "", "", err
 	}
-	
+
 	if result.Success {
 		return result.DecryptedPath, result.UsedPassword, nil
 	}
-	
+
 	return "", "", &PDFError{
 		Type:    ErrorEncrypted,
 		Message: "解密失败",
@@ -407,14 +407,14 @@ func (d *PDFDecryptor) generateTempFilePath(originalPath string) string {
 	if d.tempDir == "" {
 		d.tempDir = os.TempDir()
 	}
-	
+
 	if _, err := os.Stat(d.tempDir); os.IsNotExist(err) {
 		os.MkdirAll(d.tempDir, 0755)
 	}
 
 	// 获取原始文件名
 	fileName := filepath.Base(originalPath)
-	
+
 	// 生成临时文件路径
 	return filepath.Join(d.tempDir, "decrypted_"+fileName)
 }
@@ -423,14 +423,14 @@ func (d *PDFDecryptor) generateTempFilePath(originalPath string) string {
 func (d *PDFDecryptor) addTempFile(filePath string) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	
+
 	// 避免重复添加
 	for _, existing := range d.tempFiles {
 		if existing == filePath {
 			return
 		}
 	}
-	
+
 	d.tempFiles = append(d.tempFiles, filePath)
 }
 
@@ -438,25 +438,25 @@ func (d *PDFDecryptor) addTempFile(filePath string) {
 func (d *PDFDecryptor) CleanupTempFiles() error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	
+
 	var errors []string
-	
+
 	for _, filePath := range d.tempFiles {
 		if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
 			errors = append(errors, fmt.Sprintf("无法删除临时文件 %s: %v", filePath, err))
 		}
 	}
-	
+
 	// 清空临时文件列表
 	d.tempFiles = d.tempFiles[:0]
-	
+
 	if len(errors) > 0 {
 		return &PDFError{
 			Type:    ErrorIO,
 			Message: fmt.Sprintf("清理临时文件时出现错误: %s", strings.Join(errors, "; ")),
 		}
 	}
-	
+
 	return nil
 }
 
@@ -464,7 +464,7 @@ func (d *PDFDecryptor) CleanupTempFiles() error {
 func (d *PDFDecryptor) GetTempFiles() []string {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	
+
 	// 返回副本避免并发问题
 	result := make([]string, len(d.tempFiles))
 	copy(result, d.tempFiles)
@@ -498,7 +498,7 @@ func (d *PDFDecryptor) AddCommonPassword(password string) {
 			return
 		}
 	}
-	
+
 	d.commonPasswords = append(d.commonPasswords, password)
 }
 
@@ -539,7 +539,7 @@ func (d *PDFDecryptor) DecryptWithProgress(filePath string, progressWriter io.Wr
 	if progressWriter != nil {
 		fmt.Fprintf(progressWriter, "开始自动解密文件: %s\n", filepath.Base(filePath))
 	}
-	
+
 	// 设置临时进度回调
 	originalCallback := d.progressCallback
 	d.progressCallback = func(current, total int, password string) {
@@ -550,32 +550,32 @@ func (d *PDFDecryptor) DecryptWithProgress(filePath string, progressWriter io.Wr
 				fmt.Fprintf(progressWriter, "尝试密码: %s (%d/%d)\n", password, current, total)
 			}
 		}
-		
+
 		// 调用原始回调
 		if originalCallback != nil {
 			originalCallback(current, total, password)
 		}
 	}
-	
+
 	// 执行自动解密
 	result, err := d.AutoDecrypt(filePath)
-	
+
 	// 恢复原始回调
 	d.progressCallback = originalCallback
-	
+
 	if progressWriter != nil {
 		if result.Success {
 			if result.IsOriginalFile {
 				fmt.Fprintf(progressWriter, "文件未加密，无需解密\n")
 			} else {
-				fmt.Fprintf(progressWriter, "解密成功！使用密码: %s，尝试次数: %d，用时: %v\n", 
+				fmt.Fprintf(progressWriter, "解密成功！使用密码: %s，尝试次数: %d，用时: %v\n",
 					result.UsedPassword, result.AttemptCount, result.ProcessingTime)
 			}
 		} else {
-			fmt.Fprintf(progressWriter, "解密失败，尝试次数: %d，用时: %v\n", 
+			fmt.Fprintf(progressWriter, "解密失败，尝试次数: %d，用时: %v\n",
 				result.AttemptCount, result.ProcessingTime)
 		}
 	}
-	
+
 	return result, err
 }

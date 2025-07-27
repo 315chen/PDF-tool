@@ -12,30 +12,30 @@ import (
 
 // ABTestResult A/B测试结果
 type ABTestResult struct {
-	TestID        string    `json:"test_id"`
-	TestName      string    `json:"test_name"`
-	StartTime     time.Time `json:"start_time"`
-	EndTime       time.Time `json:"end_time"`
-	Duration      time.Duration `json:"duration"`
-	FilesProcessed int      `json:"files_processed"`
-	BytesProcessed int64    `json:"bytes_processed"`
-	ErrorCount    int       `json:"error_count"`
-	MemoryUsage   uint64    `json:"memory_usage"`
-	Success       bool      `json:"success"`
-	Error         string    `json:"error,omitempty"`
+	TestID         string        `json:"test_id"`
+	TestName       string        `json:"test_name"`
+	StartTime      time.Time     `json:"start_time"`
+	EndTime        time.Time     `json:"end_time"`
+	Duration       time.Duration `json:"duration"`
+	FilesProcessed int           `json:"files_processed"`
+	BytesProcessed int64         `json:"bytes_processed"`
+	ErrorCount     int           `json:"error_count"`
+	MemoryUsage    uint64        `json:"memory_usage"`
+	Success        bool          `json:"success"`
+	Error          string        `json:"error,omitempty"`
 }
 
 // ABTestComparison A/B测试对比结果
 type ABTestComparison struct {
-	TestID           string    `json:"test_id"`
-	TestName         string    `json:"test_name"`
-	PDFCPUResult     *ABTestResult `json:"pdfcpu_result"`
-	UniPDFResult     *ABTestResult `json:"unipdf_result"`
-	PerformanceGain  float64   `json:"performance_gain"`  // 性能提升百分比
-	MemoryReduction  float64   `json:"memory_reduction"`  // 内存减少百分比
-	Winner           string    `json:"winner"`           // "pdfcpu", "unipdf", "tie"
-	Recommendation   string    `json:"recommendation"`
-	GeneratedAt      time.Time `json:"generated_at"`
+	TestID          string        `json:"test_id"`
+	TestName        string        `json:"test_name"`
+	PDFCPUResult    *ABTestResult `json:"pdfcpu_result"`
+	UniPDFResult    *ABTestResult `json:"unipdf_result"`
+	PerformanceGain float64       `json:"performance_gain"` // 性能提升百分比
+	MemoryReduction float64       `json:"memory_reduction"` // 内存减少百分比
+	Winner          string        `json:"winner"`           // "pdfcpu", "unipdf", "tie"
+	Recommendation  string        `json:"recommendation"`
+	GeneratedAt     time.Time     `json:"generated_at"`
 }
 
 // ABTestFramework A/B测试框架
@@ -58,9 +58,9 @@ func NewABTestFramework(config *PDFServiceConfig, outputPath string) *ABTestFram
 // RunABTest 运行A/B测试
 func (f *ABTestFramework) RunABTest(testID, testName string, testFunc func() error) (*ABTestComparison, error) {
 	comparison := &ABTestComparison{
-		TestID:       testID,
-		TestName:     testName,
-		GeneratedAt:  time.Now(),
+		TestID:      testID,
+		TestName:    testName,
+		GeneratedAt: time.Now(),
 	}
 
 	// 测试pdfcpu
@@ -189,12 +189,12 @@ func (f *ABTestFramework) analyzeComparison(comparison *ABTestComparison) {
 func (f *ABTestFramework) saveResults() error {
 	f.mutex.RLock()
 	defer f.mutex.RUnlock()
-	
+
 	data, err := json.MarshalIndent(f.results, "", "  ")
 	if err != nil {
 		return err
 	}
-	
+
 	return ioutil.WriteFile(f.outputPath, data, 0644)
 }
 
@@ -204,7 +204,7 @@ func (f *ABTestFramework) LoadResults() error {
 	if err != nil {
 		return err
 	}
-	
+
 	return json.Unmarshal(data, &f.results)
 }
 
@@ -212,7 +212,7 @@ func (f *ABTestFramework) LoadResults() error {
 func (f *ABTestFramework) GetResults() map[string]*ABTestComparison {
 	f.mutex.RLock()
 	defer f.mutex.RUnlock()
-	
+
 	results := make(map[string]*ABTestComparison)
 	for k, v := range f.results {
 		results[k] = v
@@ -223,22 +223,22 @@ func (f *ABTestFramework) GetResults() map[string]*ABTestComparison {
 // GenerateReport 生成测试报告
 func (f *ABTestFramework) GenerateReport() string {
 	results := f.GetResults()
-	
+
 	report := "# A/B测试报告\n\n"
 	report += fmt.Sprintf("生成时间: %s\n", time.Now().Format("2006-01-02 15:04:05"))
 	report += fmt.Sprintf("测试总数: %d\n\n", len(results))
-	
+
 	totalTests := len(results)
 	pdfcpuWins := 0
 	unipdfWins := 0
 	ties := 0
-	
+
 	for _, comparison := range results {
 		report += fmt.Sprintf("## 测试: %s\n", comparison.TestName)
 		report += fmt.Sprintf("- 测试ID: %s\n", comparison.TestID)
 		report += fmt.Sprintf("- 获胜者: %s\n", comparison.Winner)
 		report += fmt.Sprintf("- 建议: %s\n", comparison.Recommendation)
-		
+
 		if comparison.PDFCPUResult != nil {
 			report += fmt.Sprintf("- pdfcpu耗时: %v\n", comparison.PDFCPUResult.Duration)
 		}
@@ -247,7 +247,7 @@ func (f *ABTestFramework) GenerateReport() string {
 		}
 		report += fmt.Sprintf("- 性能提升: %.2f%%\n", comparison.PerformanceGain)
 		report += fmt.Sprintf("- 内存减少: %.2f%%\n\n", comparison.MemoryReduction)
-		
+
 		switch comparison.Winner {
 		case "pdfcpu":
 			pdfcpuWins++
@@ -257,11 +257,11 @@ func (f *ABTestFramework) GenerateReport() string {
 			ties++
 		}
 	}
-	
+
 	report += "## 统计摘要\n"
 	report += fmt.Sprintf("- pdfcpu获胜: %d (%.1f%%)\n", pdfcpuWins, float64(pdfcpuWins)/float64(totalTests)*100)
 	report += fmt.Sprintf("- UniPDF获胜: %d (%.1f%%)\n", unipdfWins, float64(unipdfWins)/float64(totalTests)*100)
 	report += fmt.Sprintf("- 平局: %d (%.1f%%)\n", ties, float64(ties)/float64(totalTests)*100)
-	
+
 	return report
-} 
+}

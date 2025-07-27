@@ -27,7 +27,7 @@ func (f *TestDataFactory) CreateValidFileEntry(path string) *model.FileEntry {
 		Path:        path,
 		DisplayName: filepath.Base(path),
 		Size:        int64(f.rand.Intn(10000000) + 1000), // 1KB-10MB
-		PageCount:   f.rand.Intn(100) + 1,               // 1-100页
+		PageCount:   f.rand.Intn(100) + 1,                // 1-100页
 		IsValid:     true,
 		IsEncrypted: false,
 		Order:       0,
@@ -81,9 +81,9 @@ func (f *TestDataFactory) CreateFileEntryList(count int) []*model.FileEntry {
 func (f *TestDataFactory) CreateMixedFileEntryList(validCount, invalidCount, encryptedCount int) []*model.FileEntry {
 	totalCount := validCount + invalidCount + encryptedCount
 	entries := make([]*model.FileEntry, totalCount)
-	
+
 	index := 0
-	
+
 	// 添加有效文件
 	for i := 0; i < validCount; i++ {
 		path := fmt.Sprintf("/test/valid_%d.pdf", i)
@@ -91,7 +91,7 @@ func (f *TestDataFactory) CreateMixedFileEntryList(validCount, invalidCount, enc
 		entries[index].Order = index
 		index++
 	}
-	
+
 	// 添加无效文件
 	for i := 0; i < invalidCount; i++ {
 		path := fmt.Sprintf("/test/invalid_%d.pdf", i)
@@ -99,7 +99,7 @@ func (f *TestDataFactory) CreateMixedFileEntryList(validCount, invalidCount, enc
 		entries[index].Order = index
 		index++
 	}
-	
+
 	// 添加加密文件
 	for i := 0; i < encryptedCount; i++ {
 		path := fmt.Sprintf("/test/encrypted_%d.pdf", i)
@@ -107,7 +107,7 @@ func (f *TestDataFactory) CreateMixedFileEntryList(validCount, invalidCount, enc
 		entries[index].Order = index
 		index++
 	}
-	
+
 	return entries
 }
 
@@ -156,7 +156,7 @@ func (f *TestDataFactory) CreateFailedMergeJob(mainFile string, additionalFiles 
 // CreateCancelledMergeJob 创建已取消的合并任务
 func (f *TestDataFactory) CreateCancelledMergeJob(mainFile string, additionalFiles []string, outputPath string) *model.MergeJob {
 	job := model.NewMergeJob(mainFile, additionalFiles, outputPath)
-	job.Status = model.JobFailed // 使用JobFailed代替JobCancelled
+	job.Status = model.JobFailed          // 使用JobFailed代替JobCancelled
 	job.Progress = f.rand.Float64() * 100 // 随机进度
 	now := time.Now()
 	job.CreatedAt = now.Add(-time.Minute)
@@ -297,5 +297,3 @@ func (b *TestScenarioBuilder) BuildConcurrencyScenario(concurrentCount int) *Tes
 		},
 	}
 }
-
-

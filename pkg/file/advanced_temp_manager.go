@@ -21,11 +21,11 @@ type TempFileInfo struct {
 // AdvancedTempManager 高级临时文件管理器
 type AdvancedTempManager struct {
 	*TempFileManager
-	fileInfos    map[string]*TempFileInfo
-	tagIndex     map[string][]string // tag -> file paths
-	sizeLimit    int64               // 总大小限制
-	currentSize  int64               // 当前总大小
-	infoMutex    sync.RWMutex
+	fileInfos   map[string]*TempFileInfo
+	tagIndex    map[string][]string // tag -> file paths
+	sizeLimit   int64               // 总大小限制
+	currentSize int64               // 当前总大小
+	infoMutex   sync.RWMutex
 }
 
 // NewAdvancedTempManager 创建高级临时文件管理器
@@ -68,7 +68,7 @@ func (atm *AdvancedTempManager) CreateTempFileWithTags(prefix, suffix string, ta
 
 	atm.infoMutex.Lock()
 	atm.fileInfos[filePath] = info
-	
+
 	// 更新标签索引
 	for _, tag := range tags {
 		atm.tagIndex[tag] = append(atm.tagIndex[tag], filePath)
@@ -255,12 +255,12 @@ func (atm *AdvancedTempManager) GetStatistics() map[string]interface{} {
 	defer atm.infoMutex.RUnlock()
 
 	stats := map[string]interface{}{
-		"total_files":    len(atm.fileInfos),
-		"total_size":     atm.currentSize,
-		"size_limit":     atm.sizeLimit,
-		"usage_percent":  float64(atm.currentSize) / float64(atm.sizeLimit) * 100,
-		"total_tags":     len(atm.tagIndex),
-		"session_dir":    atm.GetSessionDir(),
+		"total_files":   len(atm.fileInfos),
+		"total_size":    atm.currentSize,
+		"size_limit":    atm.sizeLimit,
+		"usage_percent": float64(atm.currentSize) / float64(atm.sizeLimit) * 100,
+		"total_tags":    len(atm.tagIndex),
+		"session_dir":   atm.GetSessionDir(),
 	}
 
 	// 按标签统计
@@ -279,7 +279,7 @@ func (atm *AdvancedTempManager) checkSizeLimit(additionalSize int64) error {
 	defer atm.infoMutex.RUnlock()
 
 	if atm.sizeLimit > 0 && atm.currentSize+additionalSize > atm.sizeLimit {
-		return fmt.Errorf("超出大小限制: 当前 %d + 新增 %d > 限制 %d", 
+		return fmt.Errorf("超出大小限制: 当前 %d + 新增 %d > 限制 %d",
 			atm.currentSize, additionalSize, atm.sizeLimit)
 	}
 	return nil

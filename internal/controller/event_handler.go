@@ -12,7 +12,7 @@ import (
 // EventHandler 定义事件处理器，连接UI事件和控制器逻辑
 type EventHandler struct {
 	controller *Controller
-	
+
 	// UI状态回调
 	onUIStateChanged func(enabled bool)
 	onProgressUpdate func(progress float64, status, detail string)
@@ -25,12 +25,12 @@ func NewEventHandler(controller *Controller) *EventHandler {
 	handler := &EventHandler{
 		controller: controller,
 	}
-	
+
 	// 设置控制器回调
 	controller.SetProgressCallback(handler.handleProgress)
 	controller.SetErrorCallback(handler.handleError)
 	controller.SetCompletionCallback(handler.handleCompletion)
-	
+
 	return handler
 }
 
@@ -60,7 +60,7 @@ func (eh *EventHandler) HandleMainFileSelected(filePath string) error {
 	if err := eh.controller.ValidateFile(filePath); err != nil {
 		return fmt.Errorf("主文件无效: %v", err)
 	}
-	
+
 	return nil
 }
 
@@ -70,13 +70,13 @@ func (eh *EventHandler) HandleAdditionalFileAdded(filePath string) (*model.FileE
 	if err := eh.controller.ValidateFile(filePath); err != nil {
 		return nil, fmt.Errorf("文件无效: %v", err)
 	}
-	
+
 	// 获取文件信息
 	fileInfo, err := eh.controller.FileManager.GetFileInfo(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("获取文件信息失败: %v", err)
 	}
-	
+
 	// 创建文件条目
 	entry := &model.FileEntry{
 		Path:        filePath,
@@ -84,7 +84,7 @@ func (eh *EventHandler) HandleAdditionalFileAdded(filePath string) (*model.FileE
 		Size:        fileInfo.Size,
 		IsValid:     true,
 	}
-	
+
 	// 获取PDF信息
 	if pdfInfo, err := eh.controller.GetPDFInfo(filePath); err == nil {
 		entry.PageCount = pdfInfo.PageCount
@@ -92,7 +92,7 @@ func (eh *EventHandler) HandleAdditionalFileAdded(filePath string) (*model.FileE
 	} else {
 		entry.SetError(err.Error())
 	}
-	
+
 	return entry, nil
 }
 
@@ -107,30 +107,30 @@ func (eh *EventHandler) HandleMergeStart(mainFile string, additionalFiles []stri
 	if eh.controller.IsJobRunning() {
 		return fmt.Errorf("已有合并任务正在运行，请等待完成或取消当前任务")
 	}
-	
+
 	// 基本验证
 	if mainFile == "" {
 		return fmt.Errorf("请选择主PDF文件")
 	}
-	
+
 	if len(additionalFiles) == 0 {
 		return fmt.Errorf("请至少添加一个附加PDF文件")
 	}
-	
+
 	if outputPath == "" {
 		return fmt.Errorf("请选择输出文件路径")
 	}
-	
+
 	// 禁用UI
 	eh.notifyUIStateChanged(false)
-	
+
 	// 开始异步合并任务
 	if err := eh.controller.StartMergeJob(mainFile, additionalFiles, outputPath); err != nil {
 		// 如果启动失败，重新启用UI
 		eh.notifyUIStateChanged(true)
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -139,10 +139,10 @@ func (eh *EventHandler) HandleMergeCancel() error {
 	if err := eh.controller.CancelCurrentJob(); err != nil {
 		return err
 	}
-	
+
 	// 重新启用UI
 	eh.notifyUIStateChanged(true)
-	
+
 	return nil
 }
 
@@ -160,7 +160,7 @@ func (eh *EventHandler) HandleOutputPathChanged(outputPath string) error {
 	if err := eh.controller.FileManager.EnsureDirectoryExists(dir); err != nil {
 		return fmt.Errorf("输出目录无效: %v", err)
 	}
-	
+
 	// 新增：检查目录写权限
 	if err := checkDirectoryWritable(dir); err != nil {
 		return &pdf.PDFError{
@@ -170,7 +170,7 @@ func (eh *EventHandler) HandleOutputPathChanged(outputPath string) error {
 			Cause:   err,
 		}
 	}
-	
+
 	return nil
 }
 
@@ -197,7 +197,7 @@ func (eh *EventHandler) handleProgress(progress float64, status, detail string) 
 func (eh *EventHandler) handleError(err error) {
 	// 重新启用UI
 	eh.notifyUIStateChanged(true)
-	
+
 	if eh.onError != nil {
 		eh.onError(err)
 	}
@@ -207,7 +207,7 @@ func (eh *EventHandler) handleError(err error) {
 func (eh *EventHandler) handleCompletion(outputPath string) {
 	// 重新启用UI
 	eh.notifyUIStateChanged(true)
-	
+
 	message := fmt.Sprintf("PDF合并完成！\n输出文件: %s", outputPath)
 	if eh.onCompletion != nil {
 		eh.onCompletion(message)

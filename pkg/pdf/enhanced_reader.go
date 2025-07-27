@@ -172,17 +172,17 @@ func (r *EnhancedPDFReader) checkBasicStructure() error {
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		
+
 		// 检查是否有对象定义
 		if strings.Contains(line, "obj") {
 			hasObjects = true
 		}
-		
+
 		// 检查是否有交叉引用表
 		if line == "xref" {
 			hasXref = true
 		}
-		
+
 		// 检查是否有trailer
 		if line == "trailer" {
 			hasTrailer = true
@@ -365,7 +365,7 @@ func (r *EnhancedPDFReader) countPages() (int, error) {
 	if pageCount == 0 {
 		file.Seek(0, 0)
 		scanner = bufio.NewScanner(file)
-		
+
 		for scanner.Scan() {
 			line := scanner.Text()
 			if strings.Contains(line, "/Count") {
@@ -420,7 +420,7 @@ func (r *EnhancedPDFReader) extractMetadata() (map[string]string, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		
+
 		// 查找元数据字段
 		fields := []string{"Title", "Author", "Subject", "Creator", "Producer"}
 		for _, field := range fields {
@@ -484,7 +484,7 @@ func (r *EnhancedPDFReader) GetFilePath() string {
 func (r *EnhancedPDFReader) ValidateWithMode(mode ValidationMode) error {
 	oldMode := r.validationMode
 	r.validationMode = mode
-	
+
 	defer func() {
 		r.validationMode = oldMode
 	}()

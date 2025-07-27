@@ -134,7 +134,7 @@ func (r *PDFReader) GetInfo() (*PDFInfo, error) {
 
 	r.info = &PDFInfo{
 		FilePath:      r.filePath,
-		PageCount:     1, // 默认值，实际需要解析PDF
+		PageCount:     1,     // 默认值，实际需要解析PDF
 		IsEncrypted:   false, // 默认值，实际需要检查
 		FileSize:      fileInfo.Size(),
 		Title:         r.extractTitle(),
@@ -350,7 +350,7 @@ func (r *PDFReader) CheckPermissions() ([]string, error) {
 				Cause:   err,
 			}
 		}
-		
+
 		if perms, ok := permissions["permissions"].([]string); ok {
 			return perms, nil
 		}
@@ -377,13 +377,13 @@ func (r *PDFReader) checkPermissions(permission string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	
+
 	for _, perm := range permissions {
 		if perm == permission {
 			return true, nil
 		}
 	}
-	
+
 	return false, nil
 }
 
@@ -469,7 +469,7 @@ func (r *PDFReader) GetSecurityInfo() (map[string]interface{}, error) {
 		securityInfo["key_length"] = "unknown"
 		securityInfo["security_handler"] = "unknown"
 		securityInfo["filter"] = "unknown"
-		
+
 		// 权限信息
 		permissions, err := r.CheckPermissions()
 		if err == nil {
@@ -508,11 +508,11 @@ func (r *PDFReader) GetDetailedSecurityInfo() (map[string]interface{}, error) {
 	// 添加安全级别分析
 	securityLevel := r.analyzeSecurityLevel(securityInfo)
 	securityInfo["security_level"] = securityLevel
-	
+
 	// 添加权限摘要
 	permissionSummary := r.generatePermissionSummary(securityInfo)
 	securityInfo["permission_summary"] = permissionSummary
-	
+
 	// 添加安全建议
 	securityRecommendations := r.generateSecurityRecommendations(securityInfo)
 	securityInfo["security_recommendations"] = securityRecommendations
@@ -523,14 +523,14 @@ func (r *PDFReader) GetDetailedSecurityInfo() (map[string]interface{}, error) {
 // analyzeSecurityLevel 分析安全级别
 func (r *PDFReader) analyzeSecurityLevel(securityInfo map[string]interface{}) string {
 	encrypted, _ := securityInfo["encrypted"].(bool)
-	
+
 	if !encrypted {
 		return "无保护"
 	}
-	
+
 	keyLength, _ := securityInfo["key_length"].(int)
 	version, _ := securityInfo["version"].(int)
-	
+
 	switch {
 	case keyLength >= 256:
 		return "高级加密"
@@ -546,12 +546,12 @@ func (r *PDFReader) analyzeSecurityLevel(securityInfo map[string]interface{}) st
 // generatePermissionSummary 生成权限摘要
 func (r *PDFReader) generatePermissionSummary(securityInfo map[string]interface{}) map[string]interface{} {
 	summary := make(map[string]interface{})
-	
+
 	permissions, ok := securityInfo["permissions"].([]string)
 	if !ok {
 		return summary
 	}
-	
+
 	summary["total_permissions"] = len(permissions)
 	summary["can_print"] = r.containsPermission(permissions, "print")
 	summary["can_modify"] = r.containsPermission(permissions, "modify")
@@ -561,7 +561,7 @@ func (r *PDFReader) generatePermissionSummary(securityInfo map[string]interface{
 	summary["can_extract"] = r.containsPermission(permissions, "extract")
 	summary["can_assemble"] = r.containsPermission(permissions, "assemble")
 	summary["can_print_high_quality"] = r.containsPermission(permissions, "print_high")
-	
+
 	// 计算权限限制程度
 	totalPossible := 8
 	allowed := 0
@@ -570,43 +570,43 @@ func (r *PDFReader) generatePermissionSummary(securityInfo map[string]interface{
 			allowed++
 		}
 	}
-	
+
 	summary["restriction_level"] = float64(totalPossible-allowed) / float64(totalPossible) * 100
-	
+
 	return summary
 }
 
 // generateSecurityRecommendations 生成安全建议
 func (r *PDFReader) generateSecurityRecommendations(securityInfo map[string]interface{}) []string {
 	var recommendations []string
-	
+
 	encrypted, _ := securityInfo["encrypted"].(bool)
 	keyLength, _ := securityInfo["key_length"].(int)
-	
+
 	if !encrypted {
 		recommendations = append(recommendations, "建议对敏感文档启用加密保护")
 	} else {
 		if keyLength < 128 {
 			recommendations = append(recommendations, "建议使用更强的加密算法（至少128位）")
 		}
-		
+
 		hasUserPwd, _ := securityInfo["has_user_password"].(bool)
 		hasOwnerPwd, _ := securityInfo["has_owner_password"].(bool)
-		
+
 		if !hasUserPwd {
 			recommendations = append(recommendations, "建议设置用户密码以限制文档访问")
 		}
-		
+
 		if !hasOwnerPwd {
 			recommendations = append(recommendations, "建议设置所有者密码以保护文档权限设置")
 		}
 	}
-	
+
 	permissions, ok := securityInfo["permissions"].([]string)
 	if ok && len(permissions) == 8 {
 		recommendations = append(recommendations, "文档具有完全权限，考虑根据需要限制某些操作")
 	}
-	
+
 	return recommendations
 }
 
@@ -640,7 +640,7 @@ func (r *PDFReader) OpenWithPassword(password string) error {
 	if r.useCLI && r.cliAdapter != nil {
 		// 创建临时解密文件
 		tempFile := filepath.Join(r.cliAdapter.GetTempDir(), "decrypted_"+filepath.Base(r.filePath))
-		
+
 		if err := r.cliAdapter.DecryptFile(r.filePath, tempFile, password); err != nil {
 			return &PDFError{
 				Type:    ErrorEncrypted,

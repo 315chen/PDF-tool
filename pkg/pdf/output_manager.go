@@ -10,11 +10,11 @@ import (
 
 // OutputManager 输出路径管理器
 type OutputManager struct {
-	baseDir          string
-	defaultFileName  string
-	autoIncrement    bool
-	timestampSuffix  bool
-	backupEnabled    bool
+	baseDir         string
+	defaultFileName string
+	autoIncrement   bool
+	timestampSuffix bool
+	backupEnabled   bool
 }
 
 // OutputOptions 输出选项
@@ -28,11 +28,11 @@ type OutputOptions struct {
 
 // OutputInfo 输出信息
 type OutputInfo struct {
-	FinalPath    string
-	OriginalPath string
-	BackupPath   string
+	FinalPath     string
+	OriginalPath  string
+	BackupPath    string
 	IsIncremented bool
-	HasTimestamp bool
+	HasTimestamp  bool
 }
 
 // NewOutputManager 创建输出路径管理器
@@ -48,11 +48,11 @@ func NewOutputManager(options *OutputOptions) *OutputManager {
 	}
 
 	return &OutputManager{
-		baseDir:          options.BaseDirectory,
-		defaultFileName:  options.DefaultFileName,
-		autoIncrement:    options.AutoIncrement,
-		timestampSuffix:  options.TimestampSuffix,
-		backupEnabled:    options.BackupEnabled,
+		baseDir:         options.BaseDirectory,
+		defaultFileName: options.DefaultFileName,
+		autoIncrement:   options.AutoIncrement,
+		timestampSuffix: options.TimestampSuffix,
+		backupEnabled:   options.BackupEnabled,
 	}
 }
 
@@ -221,7 +221,7 @@ func (om *OutputManager) GetSuggestedPath(inputFiles []string) string {
 	firstFile := inputFiles[0]
 	fileName := filepath.Base(firstFile)
 	nameWithoutExt := strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	
+
 	suggestedName := fmt.Sprintf("%s_merged.pdf", nameWithoutExt)
 	return filepath.Join(om.baseDir, suggestedName)
 }

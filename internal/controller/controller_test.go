@@ -123,15 +123,15 @@ func TestController_ValidateFile(t *testing.T) {
 	mockPDF := &mockPDFService{}
 	mockFile := &mockFileManager{}
 	config := model.DefaultConfig()
-	
+
 	controller := NewController(mockPDF, mockFile, config)
-	
+
 	// 测试成功验证
 	err := controller.ValidateFile("test.pdf")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	
+
 	// 测试文件管理器错误
 	mockFile.validateError = fmt.Errorf("file not found")
 	err = controller.ValidateFile("test.pdf")
@@ -144,9 +144,9 @@ func TestController_StartMergeJob(t *testing.T) {
 	mockPDF := &mockPDFService{}
 	mockFile := &mockFileManager{}
 	config := model.DefaultConfig()
-	
+
 	controller := NewController(mockPDF, mockFile, config)
-	
+
 	// 设置回调
 	var progressCalled int32
 	var completionCalled int32
@@ -158,16 +158,16 @@ func TestController_StartMergeJob(t *testing.T) {
 	controller.SetCompletionCallback(func(outputPath string) {
 		atomic.StoreInt32(&completionCalled, 1)
 	})
-	
+
 	// 测试启动合并任务
 	err := controller.StartMergeJob("main.pdf", []string{"add1.pdf", "add2.pdf"}, "output.pdf")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	
+
 	// 等待任务完成
 	time.Sleep(300 * time.Millisecond)
-	
+
 	// 验证回调被调用
 	if atomic.LoadInt32(&progressCalled) == 0 {
 		t.Error("Progress callback was not called")
@@ -176,7 +176,7 @@ func TestController_StartMergeJob(t *testing.T) {
 	if atomic.LoadInt32(&completionCalled) == 0 {
 		t.Error("Completion callback was not called")
 	}
-	
+
 	// 验证任务状态
 	job := controller.GetCurrentJob()
 	if job != nil {
@@ -188,21 +188,21 @@ func TestController_CancelCurrentJob(t *testing.T) {
 	mockPDF := &mockPDFService{}
 	mockFile := &mockFileManager{}
 	config := model.DefaultConfig()
-	
+
 	controller := NewController(mockPDF, mockFile, config)
-	
+
 	// 启动任务
 	err := controller.StartMergeJob("main.pdf", []string{"add1.pdf"}, "output.pdf")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	
+
 	// 立即取消
 	err = controller.CancelCurrentJob()
 	if err != nil {
 		t.Errorf("Expected no error when canceling, got %v", err)
 	}
-	
+
 	// 验证任务被取消
 	job := controller.GetCurrentJob()
 	if job != nil {
@@ -214,31 +214,31 @@ func TestController_IsJobRunning(t *testing.T) {
 	mockPDF := &mockPDFService{}
 	mockFile := &mockFileManager{}
 	config := model.DefaultConfig()
-	
+
 	controller := NewController(mockPDF, mockFile, config)
-	
+
 	// 初始状态应该没有任务运行
 	if controller.IsJobRunning() {
 		t.Error("Expected no job running initially")
 	}
-	
+
 	// 启动任务
 	err := controller.StartMergeJob("main.pdf", []string{"add1.pdf"}, "output.pdf")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	
+
 	// 等待一小段时间让任务开始运行
 	time.Sleep(50 * time.Millisecond)
-	
+
 	// 应该有任务在运行
 	if !controller.IsJobRunning() {
 		t.Error("Expected job to be running")
 	}
-	
+
 	// 等待任务完成
 	time.Sleep(300 * time.Millisecond)
-	
+
 	// 任务完成后应该没有任务运行
 	if controller.IsJobRunning() {
 		t.Error("Expected no job running after completion")

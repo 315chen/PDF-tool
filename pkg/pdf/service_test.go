@@ -151,7 +151,7 @@ func TestPDFServiceImpl_MergePDFs(t *testing.T) {
 
 	// 尝试合并文件
 	err := service.MergePDFs(file1, []string{file2}, outputPath, &progressBuffer)
-	
+
 	// 对于简单的测试文件，可能无法正确解析，这是预期的
 	if err != nil {
 		t.Logf("合并文件时出现错误: %v", err)
@@ -183,7 +183,7 @@ func TestPDFServiceImpl_GetPDFInfo(t *testing.T) {
 
 	// 获取PDF信息
 	info, err := service.GetPDFInfo(file)
-	
+
 	// 对于简单的测试文件，可能无法正确解析，这是预期的
 	if err != nil {
 		t.Logf("获取PDF信息时出现错误: %v", err)
